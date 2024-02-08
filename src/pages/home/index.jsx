@@ -5,7 +5,7 @@ import '../../index.css'
 import { useEffect, useState } from 'react'
 import { Navigate, Route, useNavigate } from 'react-router-dom'
 import { getAuth, signOut } from "firebase/auth";
-import { collection, addDoc, getDocs } from "firebase/firestore"; 
+import { collection, addDoc, getDocs, query, where, getAggregateFromServer, sum } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
 
 
@@ -17,33 +17,96 @@ function Home() {
   const [hora, setHora] = useState(new Date());
   const [expenseDescription, setExpenseDescription] = useState('');
   const [expenseValue, setExpenseValue] = useState('');
+  const [incomeDescription, setIncomeDescription] = useState('');
+  const [incomeValue, setIncomeValue] = useState('');
 
   const [expenses, setExpenses] = useState([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [incomes, setIncomes] = useState([]);
+  const [totalIncomes, setTotalIncomes] = useState(0);
 
+  async function handleGetExpenses() {
+    try {
+      // Obter os documentos da coleção
+      const q = query(collection(db, "expenses"), where("uid", "==", userInfo.userID));
+      const expenses = await getDocs(q);
+      // Mapear os documentos para os dados
+      const fetchedData = expenses.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // Atualizar o estado com os dados
+      setExpenses(fetchedData);
+      console.log(fetchedData);
+    } catch (error) {
+      console.error('Erro ao buscar dados do Firestore:', error);
+    }
+  }
+  async function handleGetTotalExpenses() {
+    try {
+      // Obter os documentos da coleção
+      const q = query(collection(db, "expenses"), where("uid", "==", userInfo.userID));
+      const expenses = await getDocs(q);
+      // Calcular o total das despesas
+      const totalAmount = expenses.docs.reduce((acc, doc) => {
+        // Adicionar o valor da despesa ao acumulador
+        return acc + parseFloat(doc.data().value);
+      }, 0);
+      // Atualizar o estado com o total das despesas
+      setTotalExpenses(totalAmount);
+      console.log(totalAmount)
+  
+    } catch (error) {
+      console.error('Erro ao buscar dados do Firestore:', error);
+    }
+  }   
+
+  async function handleGetIncomes() {
+    try {
+      // Obter os documentos da coleção
+      const q = query(collection(db, "incomes"), where("uid", "==", userInfo.userID));
+      const incomes = await getDocs(q);
+      // Mapear os documentos para os dados
+      const fetchedData = incomes.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // Atualizar o estado com os dados
+      setIncomes(fetchedData);
+      console.log(fetchedData);
+    } catch (error) {
+      console.error('Erro ao buscar dados do Firestore:', error);
+    }
+  }
+
+  async function handleGetTotalIncomes() {
+    try {
+      // Obter os documentos da coleção
+      const q = query(collection(db, "incomes"), where("uid", "==", userInfo.userID));
+      const incomes = await getDocs(q);
+      // Calcular o total das despesas
+      const totalAmount = incomes.docs.reduce((acc, doc) => {
+        // Adicionar o valor da despesa ao acumulador
+        return acc + parseFloat(doc.data().value);
+      }, 0);
+      // Atualizar o estado com o total das despesas
+      setTotalIncomes(totalAmount);
+      console.log(totalAmount)
+  
+    } catch (error) {
+      console.error('Erro ao buscar dados do Firestore:', error);
+    }
+  }
   useEffect(() => {
     const intervalId = setInterval(() => {
       setHora(new Date());
     }, 1000);
 
-    // Limpa o intervalo quando o componente é desmontado
-    async function handleGetExpenses() {
-      try {
-        // Obter os documentos da coleção
-        const expenses = await getDocs(collection(db, "expenses"));
-        // Mapear os documentos para os dados
-        const fetchedData = expenses.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        // Atualizar o estado com os dados
-        setExpenses(fetchedData);
-      } catch (error) {
-        console.error('Erro ao buscar dados do Firestore:', error);
-      }
-    }
 
     handleGetExpenses();
-
+    handleGetTotalExpenses();
+    handleGetIncomes();
+    handleGetTotalIncomes();
 
     return () => clearInterval(intervalId);
   },[])
@@ -74,6 +137,29 @@ function Home() {
         uid: userInfo.userID,
       });
       console.log("Despesa adicionada: ", docRef.id);
+      handleGetExpenses();
+      handleGetTotalExpenses();
+      handleGetIncomes();
+      handleGetTotalIncomes();
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  const handleNewIncome = async (e) => {
+    e.preventDefault();
+    try {
+      const docRef = await addDoc(collection(db, "incomes"), {
+        name: incomeDescription,
+        value: incomeValue,
+        dateTime: hora,
+        uid: userInfo.userID,
+      });
+      console.log("Receita adicionada: ", docRef.id);
+      handleGetExpenses();
+      handleGetTotalExpenses();
+      handleGetIncomes();
+      handleGetTotalIncomes();
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -94,7 +180,21 @@ function Home() {
           <button type="button" onClick={handleSignOut}>Sair</button>
         </div>
         
-        <button type="button">Nova receita</button>
+        <form className="formIncome" onSubmit={handleNewIncome}>
+          <input
+            type="text"
+            placeholder="Descrição da receita"
+            value={incomeDescription}
+            onChange={(e) => setIncomeDescription(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Valor"
+            value={incomeValue}
+            onChange={(e) => setIncomeValue(e.target.value)}
+          />
+          <button type="submit">Nova receita</button>
+        </form>
 
         <form className="formExpense" onSubmit={handleNewExpense}>
           <input
@@ -123,10 +223,21 @@ function Home() {
           <div>
             <div>
               <h5>Receitas:</h5>
-              <span>R$ 500,00</span>
+              <span>R$ {totalIncomes}</span>
+
+              <ul>
+                {incomes.map(item => (
+                  <li key={item.id}>
+                    <p>{item.name}</p>
+                    <p>R$ {item.value}</p>
+                    
+                  </li>
+                ))}
+              </ul>
             </div>
             <div>
               <h5>Despesas:</h5>
+              <span>R$ {totalExpenses}</span>
 
               <ul>
                 {expenses.map(item => (
