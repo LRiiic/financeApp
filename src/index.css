@@ -98,3 +98,46 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.transactions-list {
+  list-style: none;
+  padding: 0;
+}
+
+.transaction-card {
+  position: relative;
+  border: 1px solid #00594c;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  list-style: none;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transaction-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-radius: 10px;
+}
+
+.transaction-income {
+  background-color: #00594c;
+}
+
+.transaction-expense {
+  background-color: #ff0000;
+}
+
+.transaction-name,
+.transaction-value {
+  font-size: 15px;
+  margin: 0 10px;
+  font-weight: bold;
+}

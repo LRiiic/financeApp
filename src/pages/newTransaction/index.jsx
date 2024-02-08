@@ -12,6 +12,7 @@ import { db } from "../../config/firebase-config.js";
 function newTransaction() {
     const userInfo = JSON.parse(localStorage.getItem('auth'));
     const [isAuthenticated, setIsAuthenticated] = useState(userInfo ? userInfo.isAuth : false);
+    const navigate = useNavigate();
     const [hora, setHora] = useState(new Date());
 
     const [transactionDescription, setTransactionDescription] = useState('');
@@ -109,6 +110,7 @@ function newTransaction() {
                         </div>
 
                         <br/>
+                        <button type="button" onClick={() => navigate(-1)}>Voltar</button>
                         <button type="submit">Registrar transação</button>
                     </div>
                 </form>

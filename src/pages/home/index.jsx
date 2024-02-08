@@ -14,6 +14,8 @@ function Home() {
   const userInfo = JSON.parse(localStorage.getItem('auth'));
 
   const [isAuthenticated, setIsAuthenticated] = useState(userInfo ? userInfo.isAuth : false);
+  const navigate = useNavigate();
+
   const [hora, setHora] = useState(new Date());
   const [expenseDescription, setExpenseDescription] = useState('');
   const [expenseValue, setExpenseValue] = useState('');
@@ -24,7 +26,26 @@ function Home() {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [incomes, setIncomes] = useState([]);
   const [totalIncomes, setTotalIncomes] = useState(0);
+  
+  const [transactions, setTransactions] = useState([]);
 
+  async function handleGetTransactions() {
+    try {
+      // Obter os documentos da coleção
+      const q = query(collection(db, "transactions"), where("uid", "==", userInfo.userID));
+      const expenses = await getDocs(q);
+      // Mapear os documentos para os dados
+      const fetchedData = expenses.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // Atualizar o estado com os dados
+      setTransactions(fetchedData);
+      console.log(fetchedData);
+    } catch (error) {
+      console.error('Erro ao buscar dados do Firestore:', error);
+    }
+  }
   async function handleGetExpenses() {
     try {
       // Obter os documentos da coleção
@@ -103,6 +124,7 @@ function Home() {
     }, 1000);
 
 
+    handleGetTransactions();
     handleGetExpenses();
     handleGetTotalExpenses();
     handleGetIncomes();
@@ -110,8 +132,6 @@ function Home() {
 
     return () => clearInterval(intervalId);
   },[])
-
-  const navigate = useNavigate();
 
   const handleSignOut = async (e) => {
     e.preventDefault();
@@ -127,65 +147,10 @@ function Home() {
     });
   }
 
-  const handleNewExpense = async (e) => {
-    e.preventDefault();
-    try {
-      const docRef = await addDoc(collection(db, "expenses"), {
-        name: expenseDescription,
-        value: expenseValue,
-        dateTime: hora,
-        uid: userInfo.userID,
-      });
-      console.log("Despesa adicionada: ", docRef.id);
-      handleGetExpenses();
-      handleGetTotalExpenses();
-      handleGetIncomes();
-      handleGetTotalIncomes();
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-
-  const handleNewIncome = async (e) => {
-    e.preventDefault();
-    try {
-      const docRef = await addDoc(collection(db, "incomes"), {
-        name: incomeDescription,
-        value: incomeValue,
-        dateTime: hora,
-        uid: userInfo.userID,
-      });
-      console.log("Receita adicionada: ", docRef.id);
-      handleGetExpenses();
-      handleGetTotalExpenses();
-      handleGetIncomes();
-      handleGetTotalIncomes();
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-
   const handleFormTransaction = (e) => {
     e.preventDefault();
     navigate('/new-transaction');
   }
-
-  const handleNewTransaction = async (e) => {
-    e.preventDefault();
-    try {
-      const docRef = await addDoc(collection(db, "transactions"), {
-        name: description,
-        value: value,
-        type: type,
-        dateTime: hora,
-        uid: userInfo.userID,
-      });
-      console.log("Transação registrada: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-
 
   return isAuthenticated ? (
     <>
@@ -200,39 +165,8 @@ function Home() {
           <button type="button" onClick={handleSignOut}>Sair</button>
         </div>
         
-        <form className="formIncome" onSubmit={handleNewIncome}>
-          <input
-            type="text"
-            placeholder="Descrição da receita"
-            value={incomeDescription}
-            onChange={(e) => setIncomeDescription(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Valor"
-            value={incomeValue}
-            onChange={(e) => setIncomeValue(e.target.value)}
-          />
-          <button type="submit">Nova receita</button>
-        </form>
-
-        <form className="formExpense" onSubmit={handleNewExpense}>
-          <input
-            type="text"
-            placeholder="Descrição da despesa"
-            value={expenseDescription}
-            onChange={(e) => setExpenseDescription(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Valor"
-            value={expenseValue}
-            onChange={(e) => setExpenseValue(e.target.value)}
-          />
-          <button type="submit">Nova despesa</button>
-        </form>
-
-        <button type="button" onClick={handleFormTransaction}>+</button>
+        <br/>
+        <button type="button" onClick={handleFormTransaction}>+ Nova transação</button>
 
         <div>
           <h4>Saldo:</h4>
@@ -244,29 +178,15 @@ function Home() {
 
           <div>
             <div>
-              <h5>Receitas:</h5>
-              <span>R$ {totalIncomes}</span>
-
-              <ul>
-                {incomes.map(item => (
-                  <li key={item.id}>
-                    <p>{item.name}</p>
-                    <p>R$ {item.value}</p>
-                    
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h5>Despesas:</h5>
+              <h5>Transações:</h5>
               <span>R$ {totalExpenses}</span>
 
-              <ul>
-                {expenses.map(item => (
-                  <li key={item.id}>
-                    <p>{item.name}</p>
-                    <p>R$ {item.value}</p>
-                    
+              <ul className="transactions-list">
+                {transactions.map(item => (
+                  <li key={item.id} className={'transaction-card'}>
+                    <span className={'transaction-badge transaction-' + item.type}></span>
+                    <p className='transaction-name'>{item.name}</p>
+                    <p className='transaction-value'>R$ {item.value}</p>
                   </li>
                 ))}
               </ul>
