@@ -165,6 +165,26 @@ function Home() {
     }
   }
 
+  const handleFormTransaction = (e) => {
+    e.preventDefault();
+    navigate('/new-transaction');
+  }
+
+  const handleNewTransaction = async (e) => {
+    e.preventDefault();
+    try {
+      const docRef = await addDoc(collection(db, "transactions"), {
+        name: description,
+        value: value,
+        type: type,
+        dateTime: hora,
+        uid: userInfo.userID,
+      });
+      console.log("Transação registrada: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
 
 
   return isAuthenticated ? (
@@ -211,6 +231,8 @@ function Home() {
           />
           <button type="submit">Nova despesa</button>
         </form>
+
+        <button type="button" onClick={handleFormTransaction}>+</button>
 
         <div>
           <h4>Saldo:</h4>
