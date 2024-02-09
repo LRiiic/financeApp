@@ -5,7 +5,7 @@ import '../../index.css'
 import { useEffect, useState } from 'react'
 import { Navigate, Route, useNavigate } from 'react-router-dom'
 import { getAuth, signOut } from "firebase/auth";
-import { collection, addDoc, getDocs, query, where, getAggregateFromServer, sum } from "firebase/firestore"; 
+import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
 
 
@@ -26,24 +26,66 @@ function Home() {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [incomes, setIncomes] = useState([]);
   const [totalIncomes, setTotalIncomes] = useState(0);
+  const [totalBalance, setTotalBalance] = useState(0);
   
   const [transactions, setTransactions] = useState([]);
 
   async function handleGetTransactions() {
     try {
       // Obter os documentos da coleção
-      const q = query(collection(db, "transactions"), where("uid", "==", userInfo.userID));
-      const expenses = await getDocs(q);
+      const q = query(
+        collection(db, "transactions"),
+        where("uid", "==", userInfo.userID),
+        orderBy("dateTime", "desc")
+      );
+      const transactions = await getDocs(q);
       // Mapear os documentos para os dados
-      const fetchedData = expenses.docs.map(doc => ({
+      const fetchedData = transactions.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       // Atualizar o estado com os dados
       setTransactions(fetchedData);
+
+      const q2 = query(collection(db, "transactions"), where("uid", "==", userInfo.userID), where("type", "==", "expense"));
+      const expenses = await getDocs(q2);
+
+      const totalExpenses = expenses.docs.reduce((acc, doc) => {
+        // Adicionar o valor da despesa ao acumulador
+        return acc + parseFloat(doc.data().value);
+      }, 0);
+      // Atualizar o estado com o total das despesas
+      setTotalExpenses(totalExpenses);
+
+      const q3 = query(collection(db, "transactions"), where("uid", "==", userInfo.userID), where("type", "==", "income"));
+      const incomes = await getDocs(q3);
+
+      const totalIncomes = incomes.docs.reduce((acc, doc) => {
+        // Adicionar o valor da despesa ao acumulador
+        return acc + parseFloat(doc.data().value);
+      }, 0);
+
+      setTotalIncomes(totalIncomes);
+
+      const totalBalance = totalIncomes - totalExpenses;
+      setTotalBalance(totalBalance);
       console.log(fetchedData);
     } catch (error) {
       console.error('Erro ao buscar dados do Firestore:', error);
+    }
+  }
+
+  async function deleteTransaction(transactionId) {
+    try {
+      // Referenciar o documento que você deseja excluir
+      const transactionRef = doc(db, 'transactions', transactionId);
+  
+      // Excluir o documento
+      await deleteDoc(transactionRef);
+      handleGetTransactions();
+      console.log('Registro excluído com sucesso!');
+    } catch (error) {
+      console.error('Erro ao excluir registro:', error);
     }
   }
   async function handleGetExpenses() {
@@ -125,10 +167,10 @@ function Home() {
 
 
     handleGetTransactions();
-    handleGetExpenses();
-    handleGetTotalExpenses();
-    handleGetIncomes();
-    handleGetTotalIncomes();
+    // handleGetExpenses();
+    // handleGetTotalExpenses();
+    // handleGetIncomes();
+    // handleGetTotalIncomes();
 
     return () => clearInterval(intervalId);
   },[])
@@ -152,6 +194,24 @@ function Home() {
     navigate('/new-transaction');
   }
 
+  const transactionDetails = (transactionId) => {
+    return function(event) {
+      // Acessa o elemento clicado usando event.target
+      console.log('Elemento clicado:', event.target.className);
+      if(event.target.className === 'transaction-card') {
+        if (event.target.querySelector('.transaction-remove').style.width === '30%') {
+          event.target.querySelector('.transaction-remove').style.width = '0%';
+          event.target.querySelector('.transaction-remove').style.opacity = '0';
+          event.target.querySelector('.transaction-remove').style.visibility = 'hidden';
+        } else {
+          event.target.querySelector('.transaction-remove').style.width = '30%';
+          event.target.querySelector('.transaction-remove').style.opacity = '1';
+          event.target.querySelector('.transaction-remove').style.visibility = 'visible';
+        }
+      }
+    };
+  }
+
   return isAuthenticated ? (
     <>
       <div>
@@ -168,25 +228,34 @@ function Home() {
         <br/>
         <button type="button" onClick={handleFormTransaction}>+ Nova transação</button>
 
-        <div>
-          <h4>Saldo:</h4>
-          <span>R$ 1000,00</span>
+        <div className='cards-informations'>
+          <div className='card-info card-balance'>
+            <h4>Saldo:</h4>
+            <span>R$ {parseFloat(totalBalance).toFixed(2)}</span>
+          </div>
+
+          <div className='card-info card-incomes'>
+            <h4>Entradas:</h4>
+            <span>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
+          </div>
+
+          <div className='card-info card-expenses'>
+            <h4>Saídas:</h4>
+            <span>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
+          </div>
         </div>
 
         <div>
-          <h4>Resumo:</h4>
-
           <div>
             <div>
               <h5>Transações:</h5>
-              <span>R$ {totalExpenses}</span>
-
               <ul className="transactions-list">
                 {transactions.map(item => (
-                  <li key={item.id} className={'transaction-card'}>
+                  <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
+                    <span className='transaction-remove' onClick={() => deleteTransaction(item.id)}>Remover</span>
                     <span className={'transaction-badge transaction-' + item.type}></span>
                     <p className='transaction-name'>{item.name}</p>
-                    <p className='transaction-value'>R$ {item.value}</p>
+                    <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
                   </li>
                 ))}
               </ul>

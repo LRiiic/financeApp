@@ -99,12 +99,51 @@ button:focus-visible {
   }
 }
 
+.cards-informations {
+  position: relative;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.card-info {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 50%;
+  height: 100%;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.30);
+}
+
+.card-info h4 {
+  margin: 0;
+}
+
+.card-balance {
+  background-color: #0984e3;
+  color: #FFFFFF;
+}
+
+.card-incomes {
+  background-color: #00594c;
+  color: #FFFFFF;
+}
+
+.card-expenses {
+  background-color: #d35c5c;
+  color: #FFFFFF;
+}
+
 .transactions-list {
   list-style: none;
   padding: 0;
 }
 
 .transaction-card {
+  cursor: pointer;
   position: relative;
   border: 1px solid #00594c;
   border-radius: 8px;
@@ -116,6 +155,12 @@ button:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+
+.transaction-card:hover {
+  background-color: #e7e7e7;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.30);
 }
 
 .transaction-badge {
@@ -140,4 +185,28 @@ button:focus-visible {
   font-size: 15px;
   margin: 0 10px;
   font-weight: bold;
+}
+
+.transaction-remove {
+  cursor: pointer;
+  position: absolute;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  right: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  padding: 0px 10px;
+  background-color: #d35c5c;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: 0.2s ease-out;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
 }
