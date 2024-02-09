@@ -5,6 +5,7 @@ import * as firebaseAuth from 'firebase/auth'
 import LoginForm from './pages/login';
 import Home from './pages/home';
 import NewTransaction from './pages/newTransaction';
+import EditTransaction from './pages/editTransaction';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" exact element={<LoginForm />}/>
         <Route path="/home" element={<Home />}/>
         <Route path="/new-transaction" element={<NewTransaction />}/>
+        <Route path="/edit-transaction/:id" element={<EditTransaction />}/>
       </Routes>
     </BrowserRouter>
   );

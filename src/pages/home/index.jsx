@@ -252,7 +252,10 @@ function Home() {
               <ul className="transactions-list">
                 {transactions.map(item => (
                   <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
-                    <span className='transaction-remove' onClick={() => deleteTransaction(item.id)}>Remover</span>
+                    <span className='transaction-remove'>
+                      <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
+                      <div className='remove-icon' onClick={() => deleteTransaction(item.id)}></div>
+                    </span>
                     <span className={'transaction-badge transaction-' + item.type}></span>
                     <p className='transaction-name'>{item.name}</p>
                     <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>

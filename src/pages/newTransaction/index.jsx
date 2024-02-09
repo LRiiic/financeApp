@@ -110,7 +110,7 @@ function newTransaction() {
                         </div>
 
                         <br/>
-                        <button type="button" onClick={() => navigate(-1)}>Voltar</button>
+                        <button type="button" onClick={() => navigate('/home')}>Voltar</button>
                         <button type="submit">Registrar transação</button>
                     </div>
                 </form>
