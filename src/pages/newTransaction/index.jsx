@@ -2,11 +2,13 @@ import financeFlexLogo from '../../assets/finance-flex.svg'
 import '../../App.css'
 import '../../index.css'
 
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { auth, provider } from '../../config/firebase-config';
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc, getDocs, query, where, getAggregateFromServer, sum } from "firebase/firestore"; 
+import { collection, addDoc, getDocs, query, where, getAggregateFromServer, sum, getFirestore, Timestamp, serverTimestamp } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
 
 function newTransaction() {
@@ -19,23 +21,45 @@ function newTransaction() {
     const [transactionValue, setTransactionValue] = useState(0);
     const [transactionType, setTransactionType] = useState('');
     const [transactionDate, setTransactionDate] = useState('');
+    const [time, setTime] = useState('');
+
+    const handleGetTimestamp = async (e) => {
+        const myTimestamp = Timestamp.fromDate(new Date());
+        console.log('myTimestamp', myTimestamp);
+        setTime(myTimestamp);
+    }
+
+    
 
     useEffect(() => {
         const intervalId = setInterval(() => {
           setHora(new Date());
         }, 1000);
-    
+        
         return () => clearInterval(intervalId);
     },[])
 
     const handleNewTransaction = async (e) => {
         e.preventDefault();
         try {
+
+        const inputDate = new Date(transactionDate);
+
+        // Verificar se o valor do input date é válido
+        if (isNaN(inputDate.getTime())) {
+            alert("Data inválida");
+            throw new Error('Data inválida');
+        }
+
+        // Formatar a data para o formato desejado
+        const formattedDate = format(inputDate, "d 'de' MMMM 'de' yyyy 'às' HH:mm:ss 'UTC'x", { locale: ptBR });
+
+        console.log('DATA: ', formattedDate);
         const docRef = await addDoc(collection(db, "transactions"), {
             name: transactionDescription,
             value: transactionValue,
             type: transactionType,
-            dateTime: transactionDate,
+            dateTime: formattedDate,
             uid: userInfo.userID,
         });
         console.log("Transação registrada: ", docRef.id);
@@ -52,7 +76,6 @@ function newTransaction() {
         <>
             <div>
                 <h1>newTransaction</h1>
-
                 <form className='formNewTransaction' onSubmit={handleNewTransaction}>
                     <div className='formNewTransaction__inputs'>
                         <div className='formNewTransaction__inputs__input'>

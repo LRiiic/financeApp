@@ -101,8 +101,10 @@ button:focus-visible {
 
 .cards-informations {
   position: relative;
-  overflow-x: auto;
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .card-info {
@@ -110,10 +112,10 @@ button:focus-visible {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  width: 50%;
+  width: 48%;
   height: 100%;
   padding: 10px;
-  margin: 10px;
+  margin: 5px 2.5px;
   border-radius: 8px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.30);
 }
@@ -123,18 +125,29 @@ button:focus-visible {
 }
 
 .card-balance {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
   background-color: #0984e3;
   color: #FFFFFF;
 }
 
 .card-incomes {
+  cursor: pointer;
   background-color: #00594c;
   color: #FFFFFF;
 }
 
 .card-expenses {
+  cursor: pointer;
   background-color: #d35c5c;
   color: #FFFFFF;
+}
+
+.card-incomes.filtered,
+.card-expenses.filtered {
+  opacity: 0.8;
 }
 
 .transactions-list {

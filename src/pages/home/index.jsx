@@ -29,7 +29,66 @@ function Home() {
   const [totalBalance, setTotalBalance] = useState(0);
   
   const [transactions, setTransactions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchByType, setSearchByType] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
 
+  const [buttonIncomes, setButtonIncomes] = useState(false);
+  const [buttonExpenses, setButtonExpenses] = useState(false);
+
+  const handleSearch = (event) => {
+    const term = event.target.value.toLowerCase(); // Converter o termo de busca para minúsculas
+    setSearchTerm(term); // Atualizar o estado do termo de busca
+
+    // Filtrar as transações que contenham o termo de busca no campo de descrição
+    const filteredTransactions = transactions.filter(transaction =>
+      transaction.name.toLowerCase().includes(term) ||
+      transaction.value.toString().toLowerCase().includes(term)
+    );
+
+    setSearchResults(filteredTransactions); // Atualizar o estado dos resultados da busca
+  };
+
+  const handleFilterByType = (e, type) => {
+    console.log('type', type);
+    console.log(e)
+
+    if (searchByType) {
+      setSearchByType(false);
+      setSearchTerm('');
+      setSearchResults(transactions);
+      setButtonIncomes(false);
+      setButtonExpenses(false);
+
+      return;
+    }
+
+    if (type === 'income') {
+      setButtonIncomes(true);
+      setButtonExpenses(false);
+    }
+
+    if (type === 'expense') {
+      setButtonIncomes(false);
+      setButtonExpenses(true);
+    }
+
+    let filteredTransactions = '';
+    if (searchTerm) {
+      filteredTransactions = searchResults.filter(transaction =>
+        transaction.type === type && transaction.name.toLowerCase().includes(searchTerm) ||
+        transaction.type === type && transaction.value.toString().toLowerCase().includes(searchTerm)
+      );
+    } else {
+      filteredTransactions = transactions.filter(transaction =>
+        transaction.type === type
+      );
+    }
+
+    console.log(filteredTransactions)
+    setSearchByType(true);
+    setSearchResults(filteredTransactions);
+  }
   async function handleGetTransactions() {
     try {
       // Obter os documentos da coleção
@@ -88,89 +147,13 @@ function Home() {
       console.error('Erro ao excluir registro:', error);
     }
   }
-  async function handleGetExpenses() {
-    try {
-      // Obter os documentos da coleção
-      const q = query(collection(db, "expenses"), where("uid", "==", userInfo.userID));
-      const expenses = await getDocs(q);
-      // Mapear os documentos para os dados
-      const fetchedData = expenses.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      // Atualizar o estado com os dados
-      setExpenses(fetchedData);
-      console.log(fetchedData);
-    } catch (error) {
-      console.error('Erro ao buscar dados do Firestore:', error);
-    }
-  }
-  async function handleGetTotalExpenses() {
-    try {
-      // Obter os documentos da coleção
-      const q = query(collection(db, "expenses"), where("uid", "==", userInfo.userID));
-      const expenses = await getDocs(q);
-      // Calcular o total das despesas
-      const totalAmount = expenses.docs.reduce((acc, doc) => {
-        // Adicionar o valor da despesa ao acumulador
-        return acc + parseFloat(doc.data().value);
-      }, 0);
-      // Atualizar o estado com o total das despesas
-      setTotalExpenses(totalAmount);
-      console.log(totalAmount)
-  
-    } catch (error) {
-      console.error('Erro ao buscar dados do Firestore:', error);
-    }
-  }   
 
-  async function handleGetIncomes() {
-    try {
-      // Obter os documentos da coleção
-      const q = query(collection(db, "incomes"), where("uid", "==", userInfo.userID));
-      const incomes = await getDocs(q);
-      // Mapear os documentos para os dados
-      const fetchedData = incomes.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      // Atualizar o estado com os dados
-      setIncomes(fetchedData);
-      console.log(fetchedData);
-    } catch (error) {
-      console.error('Erro ao buscar dados do Firestore:', error);
-    }
-  }
-
-  async function handleGetTotalIncomes() {
-    try {
-      // Obter os documentos da coleção
-      const q = query(collection(db, "incomes"), where("uid", "==", userInfo.userID));
-      const incomes = await getDocs(q);
-      // Calcular o total das despesas
-      const totalAmount = incomes.docs.reduce((acc, doc) => {
-        // Adicionar o valor da despesa ao acumulador
-        return acc + parseFloat(doc.data().value);
-      }, 0);
-      // Atualizar o estado com o total das despesas
-      setTotalIncomes(totalAmount);
-      console.log(totalAmount)
-  
-    } catch (error) {
-      console.error('Erro ao buscar dados do Firestore:', error);
-    }
-  }
   useEffect(() => {
     const intervalId = setInterval(() => {
       setHora(new Date());
     }, 1000);
 
-
     handleGetTransactions();
-    // handleGetExpenses();
-    // handleGetTotalExpenses();
-    // handleGetIncomes();
-    // handleGetTotalIncomes();
 
     return () => clearInterval(intervalId);
   },[])
@@ -234,23 +217,57 @@ function Home() {
             <span>R$ {parseFloat(totalBalance).toFixed(2)}</span>
           </div>
 
-          <div className='card-info card-incomes'>
+          <button type='button' className={buttonIncomes ? 'card-info card-incomes filtered' :'card-info card-incomes' } onClick={(e) => handleFilterByType(e, 'income')}>
             <h4>Entradas:</h4>
             <span>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
-          </div>
+          </button>
 
-          <div className='card-info card-expenses'>
+          <button className={buttonExpenses ? 'card-info card-expenses filtered' :'card-info card-expenses' } onClick={(e) => handleFilterByType(e, 'expense')}>
             <h4>Saídas:</h4>
             <span>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
-          </div>
+          </button>
         </div>
 
         <div>
           <div>
+            <div className="toolbar">
+              <input
+                type="text"
+                name="search"
+                placeholder='Pesquisar...'
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+            </div>
             <div>
-              <h5>Transações:</h5>
+              <h4 style={{marginBottom: '0px'}}>Transações:</h4>
+              <small>{transactions.length} transações encontradas</small>
               <ul className="transactions-list">
-                {transactions.map(item => (
+                {searchTerm === '' && !searchByType && transactions.map(item => (
+                  <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
+                    <span className='transaction-remove'>
+                      <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
+                      <div className='remove-icon' onClick={() => deleteTransaction(item.id)}></div>
+                    </span>
+                    <span className={'transaction-badge transaction-' + item.type}></span>
+                    <p className='transaction-name'>{item.name}</p>
+                    <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
+                  </li>
+                ))}
+
+                {searchByType && searchResults.map(item => (
+                  <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
+                    <span className='transaction-remove'>
+                      <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
+                      <div className='remove-icon' onClick={() => deleteTransaction(item.id)}></div>
+                    </span>
+                    <span className={'transaction-badge transaction-' + item.type}></span>
+                    <p className='transaction-name'>{item.name}</p>
+                    <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
+                  </li>
+                ))}
+
+                {searchTerm !== '' && !searchByType && searchResults.map(item => (
                   <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
                     <span className='transaction-remove'>
                       <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
