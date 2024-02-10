@@ -1,6 +1,7 @@
 import financeFlexLogo from '../../assets/finance-flex.svg'
 import '../../App.css'
 import '../../index.css'
+import './style.css'
 
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -10,6 +11,9 @@ import { auth, provider } from '../../config/firebase-config';
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, addDoc, getDocs, query, where, getAggregateFromServer, sum, getFirestore, Timestamp, serverTimestamp } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
+
+import Popup from '../../components/popUp';
+
 
 function newTransaction() {
     const userInfo = JSON.parse(localStorage.getItem('auth'));
@@ -22,6 +26,15 @@ function newTransaction() {
     const [transactionType, setTransactionType] = useState('');
     const [transactionDate, setTransactionDate] = useState('');
     const [time, setTime] = useState('');
+    const [showPopup, setShowPopup] = useState(false);
+    const [messagePopup, setMessagePopup] = useState(null);
+    const [typePopup, setTypePopup] = useState(null);
+
+    const handleshowPopup = (message, type) => {
+        setMessagePopup(message)
+        setTypePopup(type)
+        setShowPopup(true);
+    };
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -36,11 +49,9 @@ function newTransaction() {
         try {
 
         const inputDate = new Date(transactionDate);
-
-        // Verificar se o valor do input date é válido
         if (isNaN(inputDate.getTime())) {
-            alert("Data inválida");
-            throw new Error('Data inválida');
+            handleshowPopup('Data invalida!', 'error');
+            return;
         }
 
         var date = new Date(transactionDate);
@@ -53,8 +64,6 @@ function newTransaction() {
         const mes = String(tomorrowDate.getMonth()+1).padStart(2, '0');
         const data = tomorrowDate.getFullYear() + '-' + mes + '-' + dia;
         let dataCompleta = data + 'T' + String(tomorrowHours.getHours()).padStart(2, '0') + ':' + String(tomorrowHours.getMinutes()).padStart(2, '0')+':00';
-        // dataCompleta = new Date(dataCompleta)
-        // const formattedDate = format(dataCompleta, "d 'de' MMMM 'de' yyyy 'às' HH:mm:ss 'UTC'x", { locale: ptBR });
         const docRef = await addDoc(collection(db, "transactions"), {
             name: transactionDescription,
             value: transactionValue,
@@ -62,9 +71,9 @@ function newTransaction() {
             dateTime: dataCompleta,
             uid: userInfo.userID,
         });
-        console.log("Transação registrada: ", docRef.id);
+        handleshowPopup('Transação registrada com sucesso!', 'success');
         } catch (e) {
-        console.error("Error adding document: ", e);
+        handleshowPopup('Erro ao registrar transação!', 'error');
         }
     }
 
@@ -75,7 +84,15 @@ function newTransaction() {
     return isAuthenticated ? (
         <>
             <div>
-                <h1>newTransaction</h1>
+            {showPopup && (
+                <Popup
+                message={messagePopup}
+                type={typePopup}
+                onClose={() => setShowPopup(false)}
+                />
+            )}
+
+                <h1 className='title'>Nova transação</h1>
                 <form className='formNewTransaction' onSubmit={handleNewTransaction}>
                     <div className='formNewTransaction__inputs'>
                         <div className='formNewTransaction__inputs__input'>
@@ -101,28 +118,6 @@ function newTransaction() {
                         </div>
 
                         <div className='formNewTransaction__inputs__input'>
-                            <label htmlFor="type">Tipo</label>
-                            <input 
-                                type="radio"
-                                id="income"
-                                name="type"
-                                value="income"
-                                checked={transactionType === 'income'}
-                                onChange={handleTypeChange}
-                            />
-                            <label htmlFor="income">Entrada</label>
-                            <input 
-                                type="radio"
-                                id="expense"
-                                name="type"
-                                value="expense"
-                                checked={transactionType === 'expense'}
-                                onChange={handleTypeChange}
-                            />
-                            <label htmlFor="expense">Saída</label>
-                        </div>
-
-                        <div className='formNewTransaction__inputs__input'>
                             <label htmlFor="date">Data</label>
                             <input
                                 type="date"
@@ -132,8 +127,34 @@ function newTransaction() {
                             />
                         </div>
 
+                        <div className='formNewTransaction__inputs__input'>
+                            <span htmlFor="type">Tipo</span>
+                            <div className="inputWrap inputWrapAlt">
+                                <input 
+                                    type="radio"
+                                    id="income"
+                                    name="type"
+                                    value="income"
+                                    checked={transactionType === 'income'}
+                                    onChange={handleTypeChange}
+                                />
+                                <label htmlFor="income" className='typeTransaction'>Entrada</label>
+                            </div>
+                            <div className="inputWrap inputWrapAlt">
+                                <input 
+                                    type="radio"
+                                    id="expense"
+                                    name="type"
+                                    value="expense"
+                                    checked={transactionType === 'expense'}
+                                    onChange={handleTypeChange}
+                                />
+                                <label htmlFor="expense" className='typeTransaction'>Saída</label>
+                            </div>
+                        </div>
+
                         <br/>
-                        <button type="button" onClick={() => navigate('/home')}>Voltar</button>
+                        <button type="button" className='secondaryBtn' onClick={() => navigate('/home')}>Voltar</button>
                         <button type="submit">Registrar transação</button>
                     </div>
                 </form>

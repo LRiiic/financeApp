@@ -21,6 +21,15 @@ function newTransaction() {
     const [transactionDate, setTransactionDate] = useState('');
     const [transaction, setTransaction] = useState('');
     const [transactionError, setTransactionError] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [messagePopup, setMessagePopup] = useState(null);
+    const [typePopup, setTypePopup] = useState(null);
+
+    const handleshowPopup = (message, type) => {
+        setMessagePopup(message)
+        setTypePopup(type)
+        setShowPopup(true);
+    };
 
     let { id } = useParams();
 
@@ -50,7 +59,7 @@ function newTransaction() {
             }
         } catch (error) {
             console.error('Erro ao buscar dados do Firestore:', error);
-            alert('Erro ao buscar dados do Firestore:', error);
+            handleshowPopup('Erro ao buscar dados do Firestore', 'error');
         }
     }
 
@@ -64,26 +73,9 @@ function newTransaction() {
                 type: transactionType,
                 dateTime: transactionDate,
             });
-            alert('Transação atualizada com sucesso!');
+            handleshowPopup('Transação editada com sucesso!', 'success');
         } catch (error) {
-            console.error('Erro ao atualizar transação:', error);
-            alert('Erro ao atualizar transação:', error);
-        }
-    }
-
-    const handleNewTransaction = async (e) => {
-        e.preventDefault();
-        try {
-        const docRef = await addDoc(collection(db, "transactions"), {
-            name: transactionDescription,
-            value: transactionValue,
-            type: transactionType,
-            dateTime: transactionDate,
-            uid: userInfo.userID,
-        });
-        console.log("Transação registrada: ", docRef.id);
-        } catch (e) {
-        console.error("Error adding document: ", e);
+            handleshowPopup('Erro ao editar transação!', 'error');
         }
     }
 
@@ -95,7 +87,14 @@ function newTransaction() {
         !transactionError ? (         
             <>
                 <div>
-                    <h1>edit Transaction</h1>
+                    {showPopup && (
+                        <Popup
+                        message={messagePopup}
+                        type={typePopup}
+                        onClose={() => setShowPopup(false)}
+                        />
+                    )}
+                    <h1 className='title'>Editar transação</h1>
 
                     <form className='formNewTransaction' onSubmit={handleUpdateTransaction}>
                         <div className='formNewTransaction__inputs'>
@@ -121,27 +120,7 @@ function newTransaction() {
                                 />
                             </div>
 
-                            <div className='formNewTransaction__inputs__input'>
-                                <label htmlFor="type">Tipo</label>
-                                <input 
-                                    type="radio"
-                                    id="income"
-                                    name="type"
-                                    value="income"
-                                    checked={transactionType === 'income'}
-                                    onChange={handleTypeChange}
-                                />
-                                <label htmlFor="income">Entrada</label>
-                                <input 
-                                    type="radio"
-                                    id="expense"
-                                    name="type"
-                                    value="expense"
-                                    checked={transactionType === 'expense'}
-                                    onChange={handleTypeChange}
-                                />
-                                <label htmlFor="expense">Saída</label>
-                            </div>
+
 
                             <div className='formNewTransaction__inputs__input'>
                                 <label htmlFor="date">Data</label>
@@ -153,8 +132,34 @@ function newTransaction() {
                                 />
                             </div>
 
+                            <div className='formNewTransaction__inputs__input'>
+                                <span htmlFor="type">Tipo</span>
+                                <div className="inputWrap inputWrapAlt">
+                                    <input 
+                                        type="radio"
+                                        id="income"
+                                        name="type"
+                                        value="income"
+                                        checked={transactionType === 'income'}
+                                        onChange={handleTypeChange}
+                                    />
+                                    <label htmlFor="income" className='typeTransaction'>Entrada</label>
+                                </div>
+                                <div className="inputWrap inputWrapAlt">
+                                    <input 
+                                        type="radio"
+                                        id="expense"
+                                        name="type"
+                                        value="expense"
+                                        checked={transactionType === 'expense'}
+                                        onChange={handleTypeChange}
+                                    />
+                                    <label htmlFor="expense" className='typeTransaction'>Saída</label>
+                                </div>
+                            </div>
+
                             <br/>
-                            <button type="button" onClick={() => navigate('/home')}>Voltar</button>
+                            <button type="button" className='secondaryBtn' onClick={() => navigate('/home')}>Voltar</button>
                             <button type="submit">Editar transação</button>
                         </div>
                     </form>

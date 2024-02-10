@@ -284,40 +284,41 @@ function Home() {
             </div>
 
             <div className='filtersDate'>
-              
-              <div className="inputWrap">
-                <input type="radio" id="yesterday" name="type" value="yesterday"
-                  checked={filterDate === 'yesterday'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                />
-                <label className="filterDate" htmlFor="yesterday">Ontem</label>
-              </div>
+              <div className="filtersWrap">
+                <div className="inputWrap">
+                  <input type="radio" id="yesterday" name="type" value="yesterday"
+                    checked={filterDate === 'yesterday'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                  />
+                  <label className="filterDate" htmlFor="yesterday">Ontem</label>
+                </div>
 
-              <div className="inputWrap">
-                <input type="radio" id="today" name="type" value="today"
-                  checked={filterDate === 'today'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                />
-                <label className="filterDate" htmlFor="today">Hoje</label>
-              </div>
-              
-              <div className="inputWrap">
-                <input type="radio" id="week" name="type" value="week"
-                  checked={filterDate === 'week'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                />
-                <label className="filterDate" htmlFor="week">Esta semana</label>
-              </div>
+                <div className="inputWrap">
+                  <input type="radio" id="today" name="type" value="today"
+                    checked={filterDate === 'today'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                  />
+                  <label className="filterDate" htmlFor="today">Hoje</label>
+                </div>
+                
+                <div className="inputWrap">
+                  <input type="radio" id="week" name="type" value="week"
+                    checked={filterDate === 'week'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                  />
+                  <label className="filterDate" htmlFor="week">Esta semana</label>
+                </div>
 
-              <div className="inputWrap">
-                <input type="radio" id="month" name="type" value="month"
-                  checked={filterDate === 'month'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                />
-                <label className="filterDate" htmlFor="month">Este mês</label>
-              </div>
-              
-              <div className="inputWrap">
-                <input type="radio" id="year" name="type" value="year"
-                  checked={filterDate === 'year'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                />
-                <label className="filterDate" htmlFor="year">Este ano</label>
+                <div className="inputWrap">
+                  <input type="radio" id="month" name="type" value="month"
+                    checked={filterDate === 'month'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                  />
+                  <label className="filterDate" htmlFor="month">Este mês</label>
+                </div>
+                
+                <div className="inputWrap">
+                  <input type="radio" id="year" name="type" value="year"
+                    checked={filterDate === 'year'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                  />
+                  <label className="filterDate" htmlFor="year">Este ano</label>
+                </div>
               </div>
             </div>
 
