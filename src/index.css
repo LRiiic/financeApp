@@ -163,7 +163,6 @@ button:focus-visible {
   padding: 10px;
   margin-bottom: 10px;
   list-style: none;
-  overflow: hidden;
 
   display: flex;
   justify-content: space-between;
@@ -191,6 +190,10 @@ button:focus-visible {
 
 .transaction-expense {
   background-color: #ff0000;
+}
+
+.transaction-name {
+  text-align: left;
 }
 
 .transaction-name,
@@ -240,4 +243,55 @@ button:focus-visible {
     background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCI+CjxwYXRoIGQ9Ik0gMjEgMiBDIDE5LjM1NDU0NSAyIDE4IDMuMzU0NTQ1NSAxOCA1IEwgMTggNyBMIDEwLjE1NDI5NyA3IEEgMS4wMDAxIDEuMDAwMSAwIDAgMCA5Ljk4NDM3NSA2Ljk4NjMyODEgQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDkuODM5ODQzOCA3IEwgOCA3IEEgMS4wMDAxIDEuMDAwMSAwIDEgMCA4IDkgTCA5IDkgTCA5IDQ1IEMgOSA0Ni42NDU0NTUgMTAuMzU0NTQ1IDQ4IDEyIDQ4IEwgMzggNDggQyAzOS42NDU0NTUgNDggNDEgNDYuNjQ1NDU1IDQxIDQ1IEwgNDEgOSBMIDQyIDkgQSAxLjAwMDEgMS4wMDAxIDAgMSAwIDQyIDcgTCA0MC4xNjc5NjkgNyBBIDEuMDAwMSAxLjAwMDEgMCAwIDAgMzkuODQxNzk3IDcgTCAzMiA3IEwgMzIgNSBDIDMyIDMuMzU0NTQ1NSAzMC42NDU0NTUgMiAyOSAyIEwgMjEgMiB6IE0gMjEgNCBMIDI5IDQgQyAyOS41NTQ1NDUgNCAzMCA0LjQ0NTQ1NDUgMzAgNSBMIDMwIDcgTCAyMCA3IEwgMjAgNSBDIDIwIDQuNDQ1NDU0NSAyMC40NDU0NTUgNCAyMSA0IHogTSAxMSA5IEwgMTguODMyMDMxIDkgQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDE5LjE1ODIwMyA5IEwgMzAuODMyMDMxIDkgQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDMxLjE1ODIwMyA5IEwgMzkgOSBMIDM5IDQ1IEMgMzkgNDUuNTU0NTQ1IDM4LjU1NDU0NSA0NiAzOCA0NiBMIDEyIDQ2IEMgMTEuNDQ1NDU1IDQ2IDExIDQ1LjU1NDU0NSAxMSA0NSBMIDExIDkgeiBNIDE4Ljk4NDM3NSAxMy45ODYzMjggQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDE4IDE1IEwgMTggNDAgQSAxLjAwMDEgMS4wMDAxIDAgMSAwIDIwIDQwIEwgMjAgMTUgQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDE4Ljk4NDM3NSAxMy45ODYzMjggeiBNIDI0Ljk4NDM3NSAxMy45ODYzMjggQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDI0IDE1IEwgMjQgNDAgQSAxLjAwMDEgMS4wMDAxIDAgMSAwIDI2IDQwIEwgMjYgMTUgQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDI0Ljk4NDM3NSAxMy45ODYzMjggeiBNIDMwLjk4NDM3NSAxMy45ODYzMjggQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDMwIDE1IEwgMzAgNDAgQSAxLjAwMDEgMS4wMDAxIDAgMSAwIDMyIDQwIEwgMzIgMTUgQSAxLjAwMDEgMS4wMDAxIDAgMCAwIDMwLjk4NDM3NSAxMy45ODYzMjggeiI+PC9wYXRoPgo8L3N2Zz4=') 50% 50% no-repeat;
     background-size: 50%;
     filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(217deg) brightness(100%) contrast(104%);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar input {
+  width: 100%;
+  height: 35px;
+  border: 1px solid #595959;
+  border-radius: 8px;
+  padding: 5px;
+  font-size: 16px;
+  outline: none;
+}
+
+.transaction-card {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.transaction-date {
+  width: 100%;
+  text-align: left;
+  left: 0;
+  z-index: 0;
+  font-size: 11px;
+}
+
+.transaction-list li[date]:first-of-type::before {
+  z-index: 1;
+  position: inherit;
+  top: -10px;
+  left: 0;
+  width: 100%;
+  background-color: green;
+  display: block;
+  content: attr(date);
+  color: #303030;
+}
+
+.transaction-name,
+.transaction-value,
+.transaction-date {
+  pointer-events: none;
 }

@@ -23,14 +23,6 @@ function newTransaction() {
     const [transactionDate, setTransactionDate] = useState('');
     const [time, setTime] = useState('');
 
-    const handleGetTimestamp = async (e) => {
-        const myTimestamp = Timestamp.fromDate(new Date());
-        console.log('myTimestamp', myTimestamp);
-        setTime(myTimestamp);
-    }
-
-    
-
     useEffect(() => {
         const intervalId = setInterval(() => {
           setHora(new Date());
@@ -51,15 +43,23 @@ function newTransaction() {
             throw new Error('Data inválida');
         }
 
-        // Formatar a data para o formato desejado
-        const formattedDate = format(inputDate, "d 'de' MMMM 'de' yyyy 'às' HH:mm:ss 'UTC'x", { locale: ptBR });
-
-        console.log('DATA: ', formattedDate);
+        var date = new Date(transactionDate);
+        var timestamp = date.getTime();
+        const tomorrowDate = new Date(timestamp);
+        const tomorrowHours = new Date();
+        
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+        const dia = String(tomorrowDate.getDate()).padStart(2, '0');
+        const mes = String(tomorrowDate.getMonth()+1).padStart(2, '0');
+        const data = tomorrowDate.getFullYear() + '-' + mes + '-' + dia;
+        let dataCompleta = data + 'T' + String(tomorrowHours.getHours()).padStart(2, '0') + ':' + String(tomorrowHours.getMinutes()).padStart(2, '0')+':00';
+        // dataCompleta = new Date(dataCompleta)
+        // const formattedDate = format(dataCompleta, "d 'de' MMMM 'de' yyyy 'às' HH:mm:ss 'UTC'x", { locale: ptBR });
         const docRef = await addDoc(collection(db, "transactions"), {
             name: transactionDescription,
             value: transactionValue,
             type: transactionType,
-            dateTime: formattedDate,
+            dateTime: dataCompleta,
             uid: userInfo.userID,
         });
         console.log("Transação registrada: ", docRef.id);

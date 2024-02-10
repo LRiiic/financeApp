@@ -8,7 +8,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
 
-
+import TransactionCard from '../../components/transactionCard'
 
 function Home() {
   const userInfo = JSON.parse(localStorage.getItem('auth'));
@@ -17,14 +17,8 @@ function Home() {
   const navigate = useNavigate();
 
   const [hora, setHora] = useState(new Date());
-  const [expenseDescription, setExpenseDescription] = useState('');
-  const [expenseValue, setExpenseValue] = useState('');
-  const [incomeDescription, setIncomeDescription] = useState('');
-  const [incomeValue, setIncomeValue] = useState('');
 
-  const [expenses, setExpenses] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
-  const [incomes, setIncomes] = useState([]);
   const [totalIncomes, setTotalIncomes] = useState(0);
   const [totalBalance, setTotalBalance] = useState(0);
   
@@ -46,12 +40,24 @@ function Home() {
       transaction.value.toString().toLowerCase().includes(term)
     );
 
+    let totalIncome = 0;
+    let totalExpense = 0;
+    filteredTransactions.forEach(transaction => {
+      const numericValue = parseFloat(transaction.value);
+      if (!isNaN(numericValue)) {
+        if (transaction.type === 'income') {
+          totalIncome += numericValue;
+        } else if (transaction.type === 'expense') {
+          totalExpense += numericValue;
+        }
+      }
+    });
+    setTotalIncomes(totalIncome);
+    setTotalExpenses(totalExpense);
     setSearchResults(filteredTransactions); // Atualizar o estado dos resultados da busca
   };
 
   const handleFilterByType = (e, type) => {
-    console.log('type', type);
-    console.log(e)
 
     if (searchByType) {
       setSearchByType(false);
@@ -85,7 +91,6 @@ function Home() {
       );
     }
 
-    console.log(filteredTransactions)
     setSearchByType(true);
     setSearchResults(filteredTransactions);
   }
@@ -128,23 +133,8 @@ function Home() {
 
       const totalBalance = totalIncomes - totalExpenses;
       setTotalBalance(totalBalance);
-      console.log(fetchedData);
     } catch (error) {
       console.error('Erro ao buscar dados do Firestore:', error);
-    }
-  }
-
-  async function deleteTransaction(transactionId) {
-    try {
-      // Referenciar o documento que você deseja excluir
-      const transactionRef = doc(db, 'transactions', transactionId);
-  
-      // Excluir o documento
-      await deleteDoc(transactionRef);
-      handleGetTransactions();
-      console.log('Registro excluído com sucesso!');
-    } catch (error) {
-      console.error('Erro ao excluir registro:', error);
     }
   }
 
@@ -175,24 +165,6 @@ function Home() {
   const handleFormTransaction = (e) => {
     e.preventDefault();
     navigate('/new-transaction');
-  }
-
-  const transactionDetails = (transactionId) => {
-    return function(event) {
-      // Acessa o elemento clicado usando event.target
-      console.log('Elemento clicado:', event.target.className);
-      if(event.target.className === 'transaction-card') {
-        if (event.target.querySelector('.transaction-remove').style.width === '30%') {
-          event.target.querySelector('.transaction-remove').style.width = '0%';
-          event.target.querySelector('.transaction-remove').style.opacity = '0';
-          event.target.querySelector('.transaction-remove').style.visibility = 'hidden';
-        } else {
-          event.target.querySelector('.transaction-remove').style.width = '30%';
-          event.target.querySelector('.transaction-remove').style.opacity = '1';
-          event.target.querySelector('.transaction-remove').style.visibility = 'visible';
-        }
-      }
-    };
   }
 
   return isAuthenticated ? (
@@ -243,40 +215,16 @@ function Home() {
               <h4 style={{marginBottom: '0px'}}>Transações:</h4>
               <small>{transactions.length} transações encontradas</small>
               <ul className="transactions-list">
-                {searchTerm === '' && !searchByType && transactions.map(item => (
-                  <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
-                    <span className='transaction-remove'>
-                      <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
-                      <div className='remove-icon' onClick={() => deleteTransaction(item.id)}></div>
-                    </span>
-                    <span className={'transaction-badge transaction-' + item.type}></span>
-                    <p className='transaction-name'>{item.name}</p>
-                    <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
-                  </li>
+                {searchTerm === '' && !searchByType && transactions.map((item, index) => (
+                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
                 ))}
 
-                {searchByType && searchResults.map(item => (
-                  <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
-                    <span className='transaction-remove'>
-                      <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
-                      <div className='remove-icon' onClick={() => deleteTransaction(item.id)}></div>
-                    </span>
-                    <span className={'transaction-badge transaction-' + item.type}></span>
-                    <p className='transaction-name'>{item.name}</p>
-                    <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
-                  </li>
+                {searchByType && searchResults.map((item, index) => (
+                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
                 ))}
 
-                {searchTerm !== '' && !searchByType && searchResults.map(item => (
-                  <li key={item.id} className={'transaction-card'} onClick={transactionDetails(item.id)}>
-                    <span className='transaction-remove'>
-                      <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
-                      <div className='remove-icon' onClick={() => deleteTransaction(item.id)}></div>
-                    </span>
-                    <span className={'transaction-badge transaction-' + item.type}></span>
-                    <p className='transaction-name'>{item.name}</p>
-                    <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
-                  </li>
+                {searchTerm !== '' && !searchByType && searchResults.map((item, index) => (
+                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
                 ))}
               </ul>
             </div>
