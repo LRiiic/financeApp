@@ -26,20 +26,13 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchByType, setSearchByType] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [filterDate, setFilterDate] = useState(null);
+  const [totalResults, setTotalResults] = useState(0);
 
   const [buttonIncomes, setButtonIncomes] = useState(false);
   const [buttonExpenses, setButtonExpenses] = useState(false);
 
-  const handleSearch = (event) => {
-    const term = event.target.value.toLowerCase(); // Converter o termo de busca para minúsculas
-    setSearchTerm(term); // Atualizar o estado do termo de busca
-
-    // Filtrar as transações que contenham o termo de busca no campo de descrição
-    const filteredTransactions = transactions.filter(transaction =>
-      transaction.name.toLowerCase().includes(term) ||
-      transaction.value.toString().toLowerCase().includes(term)
-    );
-
+  const updateBalances = (filteredTransactions) => {
     let totalIncome = 0;
     let totalExpense = 0;
     filteredTransactions.forEach(transaction => {
@@ -54,6 +47,19 @@ function Home() {
     });
     setTotalIncomes(totalIncome);
     setTotalExpenses(totalExpense);
+  }
+  const handleSearch = (event) => {
+    const term = event.target.value.toLowerCase(); // Converter o termo de busca para minúsculas
+    setSearchTerm(term); // Atualizar o estado do termo de busca
+
+    // Filtrar as transações que contenham o termo de busca no campo de descrição
+    const filteredTransactions = transactions.filter(transaction =>
+      transaction.name.toLowerCase().includes(term) ||
+      transaction.value.toString().toLowerCase().includes(term)
+    );
+
+    updateBalances(filteredTransactions);
+    setTotalResults(filteredTransactions.length);
     setSearchResults(filteredTransactions); // Atualizar o estado dos resultados da busca
   };
 
@@ -92,6 +98,7 @@ function Home() {
     }
 
     setSearchByType(true);
+    setTotalResults(filteredTransactions.length);
     setSearchResults(filteredTransactions);
   }
   async function handleGetTransactions() {
@@ -109,6 +116,7 @@ function Home() {
         ...doc.data()
       }));
       // Atualizar o estado com os dados
+      setTotalResults(fetchedData.length);
       setTransactions(fetchedData);
 
       const q2 = query(collection(db, "transactions"), where("uid", "==", userInfo.userID), where("type", "==", "expense"));
@@ -156,9 +164,8 @@ function Home() {
       localStorage.removeItem('auth');
       setIsAuthenticated(false);
       console.log('Deslogado com sucesso!');
-      // Sign-out successful.
     }).catch((error) => {
-      // An error happened.
+      throw error;
     });
   }
 
@@ -167,9 +174,73 @@ function Home() {
     navigate('/new-transaction');
   }
 
+  const formatDate = (dateInfo) => {
+    var date = new Date(dateInfo);
+    var timestamp = date.getTime();
+    const tomorrowDate = new Date(timestamp);
+    const tomorrowHours = new Date();
+    
+    tomorrowDate.setDate(tomorrowDate.getDate());
+    const dia = String(tomorrowDate.getDate()).padStart(2, '0');
+    const mes = String(tomorrowDate.getMonth()+1).padStart(2, '0');
+    const data = tomorrowDate.getFullYear() + '-' + mes + '-' + dia;
+    let completeDate = data + 'T' + String(tomorrowHours.getHours()).padStart(2, '0') + ':' + String(tomorrowHours.getMinutes()).padStart(2, '0')+':00';
+
+    return completeDate;
+  }
+
+  function handleFilterDateChange(event) {
+    if (filterDate === event.target.value) {
+      setFilterDate(null);
+      handleGetTransactions();
+      return;
+    } else {
+      setFilterDate(event.target.value);
+    }
+    const dateValue = event.target.value;
+
+    let selectedDate = '';
+    if (dateValue === 'yesterday') {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      selectedDate = yesterday;
+    } else if (dateValue === 'today' || dateValue === 'month' || dateValue === 'year') {
+      selectedDate = new Date();
+    } else if (dateValue === 'week') {
+      
+    }
+
+    const filteredTransactions = transactions.filter(transaction => {
+      let transactionDate = new Date(transaction.dateTime);
+      transactionDate = formatDate(transactionDate);
+      selectedDate = formatDate(selectedDate);
+      transactionDate = new Date(transactionDate.split('T')[0].split('-').join('/'));
+      selectedDate = new Date(selectedDate.split('T')[0].split('-').join('/'));
+
+      if (dateValue === 'month') {
+        return (transactionDate.getMonth()+1 === selectedDate.getMonth()+1);
+      } else if (dateValue === 'year') {
+        return (transactionDate.getFullYear() === selectedDate.getFullYear());
+      } else if (dateValue === 'week') {
+        return;
+      } else if (dateValue === 'today' || dateValue === 'yesterday') {
+        return (
+        transactionDate.getDate() === selectedDate.getDate() &&
+        transactionDate.getMonth()+1 === selectedDate.getMonth()+1 &&
+        transactionDate.getFullYear() === selectedDate.getFullYear()
+        );
+      }
+    });
+    
+    updateBalances(filteredTransactions);
+    setFilterDate(event.target.value);
+    setTotalResults(filteredTransactions.length);
+    setSearchResults(filteredTransactions);
+  }
+
   return isAuthenticated ? (
     <>
-      <div>
+      <div className='mainContainer'>
         <h1>
           <img src={financeFlexLogo} alt="Finance Flex logo" width="250"/>
         </h1>
@@ -211,21 +282,67 @@ function Home() {
                 onChange={handleSearch}
               />
             </div>
+
+            <div className='filtersDate'>
+              
+              <div className="inputWrap">
+                <input type="radio" id="yesterday" name="type" value="yesterday"
+                  checked={filterDate === 'yesterday'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                />
+                <label className="filterDate" htmlFor="yesterday">Ontem</label>
+              </div>
+
+              <div className="inputWrap">
+                <input type="radio" id="today" name="type" value="today"
+                  checked={filterDate === 'today'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                />
+                <label className="filterDate" htmlFor="today">Hoje</label>
+              </div>
+              
+              <div className="inputWrap">
+                <input type="radio" id="week" name="type" value="week"
+                  checked={filterDate === 'week'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                />
+                <label className="filterDate" htmlFor="week">Esta semana</label>
+              </div>
+
+              <div className="inputWrap">
+                <input type="radio" id="month" name="type" value="month"
+                  checked={filterDate === 'month'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                />
+                <label className="filterDate" htmlFor="month">Este mês</label>
+              </div>
+              
+              <div className="inputWrap">
+                <input type="radio" id="year" name="type" value="year"
+                  checked={filterDate === 'year'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                />
+                <label className="filterDate" htmlFor="year">Este ano</label>
+              </div>
+            </div>
+
             <div>
               <h4 style={{marginBottom: '0px'}}>Transações:</h4>
-              <small>{transactions.length} transações encontradas</small>
+              <small>{totalResults} transações encontradas</small>
               <ul className="transactions-list">
-                {searchTerm === '' && !searchByType && transactions.map((item, index) => (
+                {!filterDate && searchTerm === '' && !searchByType && transactions.map((item, index) => (
                   <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
                 ))}
-
-                {searchByType && searchResults.map((item, index) => (
-                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
-                ))}
-
-                {searchTerm !== '' && !searchByType && searchResults.map((item, index) => (
-                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
-                ))}
+                {!filterDate ? (
+                  searchTerm === '' && !searchByType && transactions.map((item, index) => (
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                  )),
+                  searchByType && searchResults.map((item, index) => (
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                  )),
+                  searchTerm !== '' && !searchByType && searchResults.map((item, index) => (
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                  ))
+                ) : (
+                  filterDate && searchResults.map((item, index) => (
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                  ))
+                )}
               </ul>
             </div>
           </div>

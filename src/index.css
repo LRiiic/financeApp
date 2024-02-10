@@ -35,6 +35,11 @@ h1 {
   line-height: 1.1;
 }
 
+.mainContainer {
+  width: 100%;
+  max-width: 480px;
+}
+
 .formLogin {
   display: flex;
   flex-direction: column;
@@ -294,4 +299,50 @@ button:focus-visible {
 .transaction-value,
 .transaction-date {
   pointer-events: none;
+}
+
+.filtersDate {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.filterDate {
+  margin: 5px 5px 0 0;
+  border-radius: 80px;
+  border: 2px solid #00594c;
+  color: #303030;
+  background-color: #FFFFFF;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  width: auto;
+  cursor: pointer;
+}
+
+.filterDate:last-child,
+.inputWrap:last-child {
+  margin-right: 0;
+}
+
+.filterDate.active {
+  background-color: #00594c;
+  color: #FFFFFF;
+}
+
+input:checked ~ .filterDate {
+  background-color: #00594c!important;
+  color: #FFFFFF;
+}
+
+.inputWrap {
+  display: flex;
+  margin: 5px 5px 0 0;
+}
+
+.inputWrap input[type="radio"] {
+  display: none;
 }
