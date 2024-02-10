@@ -50,6 +50,14 @@ function TransactionCard({ item, handleGetTransactions, nextItem }) {
     return groupedTransactions;
   };
 
+
+  const formattedDate = (timestamp) => {
+    const currentDate = new Date(timestamp.substr(0, 10));
+    currentDate.setDate(currentDate.getDate() + 1);
+    const formattedDate = currentDate.toLocaleDateString();
+    return formattedDate;
+  }
+
   return (
     <>
     <li className={'transaction-card'} date={item.dateTime.substr(0, 10)} onClick={transactionDetails(item.id)}>
@@ -59,12 +67,12 @@ function TransactionCard({ item, handleGetTransactions, nextItem }) {
         </span>
         <span className={'transaction-badge transaction-' + item.type}></span>
         
-            <p className='transaction-name'>
-                {item.name}
-                <br/>
-                <small className="transaction-date">{new Date(item.dateTime.substr(0, 10)).toLocaleDateString()}</small>
-            </p>   
-            <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
+        <p className='transaction-name'>
+            {item.name}
+            <br/>
+            <small className="transaction-date">{formattedDate(item.dateTime)}</small>
+        </p>   
+        <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
     </li>
     </>
   );
