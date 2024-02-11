@@ -245,7 +245,7 @@ function Home() {
           <img src={financeFlexLogo} alt="Finance Flex logo" width="250"/>
         </h1>
 
-        <h3>Bem vindo, {userInfo.email}</h3>
+        <h3>Bem vindo, {userInfo.displayName}<div className='edit-icon' onClick={() => navigate('/edit-user')}></div></h3>
         <h5>{new Date().toLocaleDateString()} - {hora.toLocaleTimeString()}</h5>
         <div>
           <button type="button" onClick={handleSignOut}>Sair</button>

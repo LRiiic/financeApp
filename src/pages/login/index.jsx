@@ -63,7 +63,7 @@ function Login() {
           />
 
           <button type="submit">Login</button>
-          <a href="#">Cadastre-se</a>
+          <button type="button" className='secondaryBtn margin-reset' onClick={() => navigate('/register')}>Cadastre-se</button>
         </form>
       </div>
     </>

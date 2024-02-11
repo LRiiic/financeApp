@@ -38,6 +38,7 @@
 }
 
 a {
+  cursor: pointer;
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
@@ -112,13 +113,6 @@ button {
 
 button::hover {
   opacity: 0.8;
-}
-
-.secondaryBtn {
-  background-color: #FFFFFF;
-  color: #00594c;
-  border: 1px solid #00594c;
-  margin-right: 5px;
 }
 
 button:focus,
@@ -392,4 +386,15 @@ input:checked ~ .filterDate {
 
 .title {
   font-size: 25px;
+}
+
+.secondaryBtn {
+  background-color: #FFFFFF!important;
+  color: #00594c!important;
+  border: 1px solid #00594c!important;
+  margin-right: 5px;
+}
+
+.margin-reset {
+  margin: 0!important;
 }
