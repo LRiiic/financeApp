@@ -13,6 +13,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+input[type="color"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"],
+select:focus,
+textarea {
+  font-size: 16px!important;
+}
+
 /* Popup.css */
 .popup {
   position: fixed;
@@ -115,11 +134,6 @@ button::hover {
   opacity: 0.8;
 }
 
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -187,8 +201,6 @@ button:focus-visible {
 .transactions-list {
   list-style: none;
   padding: 0;
-  max-height: 350px;
-  overflow: scroll;
 }
 
 .transaction-card {
