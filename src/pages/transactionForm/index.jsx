@@ -85,46 +85,52 @@ function transactionForm({description = '', value = 0, date = '', type = ''}) {
         return () => clearInterval(intervalId);
     },[])
 
-    const handleNewTransaction = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+const handleNewTransaction = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-        setInvalid([]);
-        if (transactionDescription === '') setInvalid((invalid) => [...invalid, 'description']);
-        if (!transactionValue || transactionValue == 0 || transactionValue === '') setInvalid((invalid) => [...invalid, 'value']);
-        if (transactionType === '') setInvalid((invalid) => [...invalid, 'type']);
-        if (transactionDate === '') setInvalid((invalid) => [...invalid, 'date']);
-        if (transactionDescription === '' || !transactionValue || transactionType === '' || transactionDate === '') return;
+    setInvalid([]);
 
-        try {
-            if (location.pathname.includes('edit-transaction')) {
-                handleUpdateTransaction(e);
-                return;
-            }
-
-            var date = new Date(transactionDate);
-            var timestamp = date.getTime();
-            const tomorrowDate = new Date(timestamp);
-            const tomorrowHours = new Date();
-            
-            tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-            const dia = String(tomorrowDate.getDate()).padStart(2, '0');
-            const mes = String(tomorrowDate.getMonth()+1).padStart(2, '0');
-            const data = tomorrowDate.getFullYear() + '-' + mes + '-' + dia;
-            let dataCompleta = data + 'T' + String(tomorrowHours.getHours()).padStart(2, '0') + ':' + String(tomorrowHours.getMinutes()).padStart(2, '0')+':00';
-
-            const docRef = await addDoc(collection(db, "transactions"), {
-                name: transactionDescription,
-                value: transactionValue,
-                type: transactionType,
-                dateTime: dataCompleta,
-                uid: userInfo.userID,
-            });
-            handleshowPopup('Transação registrada com sucesso!', 'success');
-        } catch (e) {
-            handleshowPopup('Erro ao registrar transação!', 'error');
+    const isInvalid = (value) => {
+        if (!value || value === 0 || value === '') {
+            setInvalid((invalid) => [...invalid, value]);
+            return true;
         }
+        return false;
+    };
+
+    if (isInvalid(transactionDescription) || isInvalid(transactionValue) || isInvalid(transactionType) || isInvalid(transactionDate)) {
+        return;
     }
+
+    try {
+        if (location.pathname.includes('edit-transaction')) {
+            handleUpdateTransaction(e);
+            return;
+        }
+
+        const date = new Date(transactionDate);
+        const timestamp = date.getTime();
+        const tomorrowDate = new Date(timestamp);
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+        const dia = String(tomorrowDate.getDate()).padStart(2, '0');
+        const mes = String(tomorrowDate.getMonth() + 1).padStart(2, '0');
+        const data = `${tomorrowDate.getFullYear()}-${mes}-${dia}`;
+        const tomorrowHours = new Date();
+        const dataCompleta = `${data}T${String(tomorrowHours.getHours()).padStart(2, '0')}:${String(tomorrowHours.getMinutes()).padStart(2, '0')}:00`;
+
+        const docRef = await addDoc(collection(db, "transactions"), {
+            name: transactionDescription,
+            value: transactionValue,
+            type: transactionType,
+            dateTime: dataCompleta,
+            uid: userInfo.userID,
+        });
+        handleshowPopup('Transação registrada com sucesso!', 'success');
+    } catch (e) {
+        handleshowPopup('Erro ao registrar transação!', 'error');
+    }
+}
 
     function handleTypeChange(event) {
         setTransactionType(event.target.value);

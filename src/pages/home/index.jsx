@@ -9,6 +9,7 @@ import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } fr
 import { db } from "../../config/firebase-config.js";
 
 import TransactionCard from '../../components/transactionCard'
+import Popup from '../../components/popUp/index.jsx';
 
 function Home() {
   const userInfo = JSON.parse(localStorage.getItem('auth'));
@@ -32,6 +33,21 @@ function Home() {
 
   const [buttonIncomes, setButtonIncomes] = useState(false);
   const [buttonExpenses, setButtonExpenses] = useState(false);
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [messagePopup, setMessagePopup] = useState(null);
+  const [typePopup, setTypePopup] = useState(null);
+
+  const [transactionId, setTransactionId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+
+  const handleshowPopup = (message, type, id) => {
+    setMessagePopup(message)
+    setTypePopup(type)
+    setShowPopup(true);
+    setTransactionId(id)
+};
 
   const updateBalances = (filteredTransactions) => {
     let totalIncome = 0;
@@ -239,9 +255,35 @@ function Home() {
     setSearchResults(filteredTransactions);
   }
 
+  async function deleteTransaction(transactionId) {
+    setLoading(true);
+    try {
+      const transactionRef = doc(db, 'transactions', transactionId);
+  
+      await deleteDoc(transactionRef);
+      
+      handleGetTransactions();
+    } catch (error) {
+      console.error('Erro ao excluir registro:', error);
+    } finally {
+      setLoading(false);
+      setShowPopup(false);
+    }
+  }
+
   return isAuthenticated ? (
     <>
       <div className='mainContainer'>
+        {showPopup && (
+            <Popup
+              message={messagePopup}
+              type={typePopup}
+              onClose={() => setShowPopup(false)}
+              deleteTransaction={deleteTransaction}
+              id={transactionId}
+              loading={loading}
+            />
+        )}
         <h1>
           <img src={financeFlexLogo} alt="Finance Flex logo" width="250"/>
         </h1>
@@ -328,21 +370,21 @@ function Home() {
               <small>{totalResults} transações encontradas</small>
               <ul className="transactions-list">
                 {!filterDate && searchTerm === '' && !searchByType && transactions.map((item, index) => (
-                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
                 ))}
                 {!filterDate ? (
                   searchTerm === '' && !searchByType && transactions.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
                   )),
                   searchByType && searchResults.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
                   )),
                   searchTerm !== '' && !searchByType && searchResults.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
                   ))
                 ) : (
                   filterDate && searchResults.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} nextItem={transactions[index]}/>
+                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
                   ))
                 )}
               </ul>

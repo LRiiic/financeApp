@@ -3,22 +3,8 @@ import { Navigate, Route, useNavigate } from 'react-router-dom'
 import { deleteDoc, doc } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
 
-function TransactionCard({ item, handleGetTransactions, nextItem }) {
+function TransactionCard({ item, handleshowPopup }) {
   const navigate = useNavigate();
-
-  async function deleteTransaction(transactionId) {
-    try {
-      // Referenciar o documento que você deseja excluir
-      const transactionRef = doc(db, 'transactions', transactionId);
-  
-      // Excluir o documento
-      await deleteDoc(transactionRef);
-      handleGetTransactions();
-      console.log('Registro excluído com sucesso!');
-    } catch (error) {
-      console.error('Erro ao excluir registro:', error);
-    }
-  }
 
   const transactionDetails = (transactionId) => {
     return function(event) {
@@ -63,7 +49,7 @@ function TransactionCard({ item, handleGetTransactions, nextItem }) {
     <li className={'transaction-card'} date={item.dateTime.substr(0, 10)} onClick={transactionDetails(item.id)}>
         <span className='transaction-remove'>
             <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
-            <div className='remove-icon' onClick={() => deleteTransaction(item.id)}></div>
+            <div className='remove-icon' onClick={() => handleshowPopup('Deseja remover esta transação?', 'alert', item.id)}></div>
         </span>
         <span className={'transaction-badge transaction-' + item.type}></span>
         
