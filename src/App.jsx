@@ -5,8 +5,7 @@ import * as firebaseAuth from 'firebase/auth'
 import LoginForm from './pages/login';
 import Register from './pages/register';
 import Home from './pages/home';
-import NewTransaction from './pages/newTransaction';
-import EditTransaction from './pages/editTransaction';
+import TransactionForm from './pages/transactionForm';
 import NotFound from './pages/notFound';
 
 function App() {
@@ -16,8 +15,8 @@ function App() {
         <Route path="/" exact element={<LoginForm />}/>
         <Route path="/register" element={<Register />}/>
         <Route path="/home" element={<Home />}/>
-        <Route path="/new-transaction" element={<NewTransaction />}/>
-        <Route path="/edit-transaction/:id" element={<EditTransaction />}/>
+        <Route path="/new-transaction" element={<TransactionForm />}/>
+        <Route path="/edit-transaction/:id" element={<TransactionForm  />}/>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

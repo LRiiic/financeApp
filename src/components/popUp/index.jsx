@@ -1,29 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
 function Popup({ message, type, onClose }) {
-  const [isOpen, setIsOpen] = useState(true);
+
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setIsOpen(false);
+      onClose();
     }, 3000);
 
     return () => clearTimeout(timeoutId);
   }, []);
 
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-
   return (
-    <>
-      {isOpen && (
-        <div className={`popup ${type}`}>
-          <p>{message}</p>
-          <button onClick={handleClose}>Fechar</button>
-        </div>
-      )}
-    </>
+    <div className={`popup ${type}`}>
+      <p>{message}</p>
+      <button onClick={onClose}>Fechar</button>
+    </div>
   );
 }
 
