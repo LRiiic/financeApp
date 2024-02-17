@@ -14,6 +14,7 @@ function Home() {
   const userInfo = JSON.parse(localStorage.getItem('auth'));
 
   const [isAuthenticated, setIsAuthenticated] = useState(userInfo ? userInfo.isAuth : false);
+
   const navigate = useNavigate();
 
   const [hora, setHora] = useState(new Date());
@@ -245,7 +246,7 @@ function Home() {
           <img src={financeFlexLogo} alt="Finance Flex logo" width="250"/>
         </h1>
 
-        <h3>Bem vindo, {userInfo.displayName}<div className='edit-icon' onClick={() => navigate('/edit-user')}></div></h3>
+        <h3>Bem vindo, {userInfo.displayName ? userInfo.displayName : userInfo.email}<div className='edit-icon' onClick={() => navigate('/edit-user')}></div></h3>
         <h5>{new Date().toLocaleDateString()} - {hora.toLocaleTimeString()}</h5>
         <div>
           <button type="button" onClick={handleSignOut}>Sair</button>
