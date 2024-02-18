@@ -73,7 +73,6 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -84,9 +83,9 @@ h1 {
 }
 
 .mainContainer {
+  position: relative;
   width: 100%;
-  max-width: 480px;
-  padding: 0 15px;
+  padding: 0 20px;
   box-sizing: border-box;
 }
 
@@ -207,6 +206,7 @@ button::hover {
 .transactions-list {
   list-style: none;
   padding: 0;
+  padding-bottom: 30px;
 }
 
 .transaction-card {

@@ -10,7 +10,7 @@ export default function NotFound() {
     return (
         <div>
             <h3>Página não encontrada</h3>
-            <button type="button" onClick={() => navigate('/home')}>Página inicial</button>
+            <button type="button" onClick={() => navigate('/')}>Página inicial</button>
         </div>
     );
 }

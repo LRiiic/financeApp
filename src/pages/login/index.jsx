@@ -43,7 +43,7 @@ function Login() {
       };
 
       localStorage.setItem('auth', JSON.stringify(authInfo));
-      navigate('/home');
+      navigate('/');
       console.log('Usuário logado com sucesso!');
     } catch (error) {
       console.error('Erro ao fazer login:', error.message);
@@ -79,7 +79,7 @@ function Login() {
       </div>
     </>
   ) : (
-    <Navigate to="/home" replace />
+    <Navigate to="/" replace />
   );
 }
 

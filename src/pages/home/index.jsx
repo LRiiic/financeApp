@@ -3,11 +3,13 @@ import '../../App.css'
 import '../../index.css'
 
 import { useEffect, useState } from 'react'
-import { Navigate, Route, useNavigate } from 'react-router-dom'
+import { Navigate, Outlet, Route, useNavigate } from 'react-router-dom'
 import { getAuth, signOut } from "firebase/auth";
 import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
 
+import NavBar from '../../components/navBar';
+import ActionBar from '../../components/actionBar';
 import TransactionCard from '../../components/transactionCard'
 import Popup from '../../components/popUp/index.jsx';
 
@@ -177,7 +179,7 @@ function Home() {
     e.preventDefault();
     const auth = getAuth();
     signOut(auth).then(() => {
-      navigate('/');
+      navigate('/login');
       localStorage.removeItem('auth');
       setIsAuthenticated(false);
       console.log('Deslogado com sucesso!');
@@ -273,128 +275,129 @@ function Home() {
 
   return isAuthenticated ? (
     <>
-      <div className='mainContainer'>
-        {showPopup && (
-            <Popup
-              message={messagePopup}
-              type={typePopup}
-              onClose={() => setShowPopup(false)}
-              deleteTransaction={deleteTransaction}
-              id={transactionId}
-              loading={loading}
-            />
-        )}
-        <h1>
-          <img src={financeFlexLogo} alt="Finance Flex logo" width="250"/>
-        </h1>
-
-        <h3>Bem vindo, {userInfo.displayName ? userInfo.displayName : userInfo.email}<div className='edit-icon' onClick={() => navigate('/edit-user')}></div></h3>
-        <h5>{new Date().toLocaleDateString()} - {hora.toLocaleTimeString()}</h5>
-        <div>
-          <button type="button" onClick={handleSignOut}>Sair</button>
-        </div>
-        
-        <br/>
-        <button type="button" onClick={handleFormTransaction}>+ Nova transação</button>
-
-        <div className='cards-informations'>
-          <div className='card-info card-balance'>
-            <h4>Saldo:</h4>
-            <span>R$ {parseFloat(totalBalance).toFixed(2)}</span>
-          </div>
-
-          <button type='button' className={buttonIncomes ? 'card-info card-incomes filtered' :'card-info card-incomes' } onClick={(e) => handleFilterByType(e, 'income')}>
-            <h4>Entradas:</h4>
-            <span>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
-          </button>
-
-          <button className={buttonExpenses ? 'card-info card-expenses filtered' :'card-info card-expenses' } onClick={(e) => handleFilterByType(e, 'expense')}>
-            <h4>Saídas:</h4>
-            <span>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
-          </button>
-        </div>
-
-        <div>
-          <div>
-            <div className="toolbar">
-              <input
-                type="text"
-                name="search"
-                placeholder='Pesquisar...'
-                value={searchTerm}
-                onChange={handleSearch}
-              />
+      <NavBar />
+      <ActionBar />
+      {location.pathname === '/' ?
+        <>
+            {showPopup && (
+                <Popup
+                  message={messagePopup}
+                  type={typePopup}
+                  onClose={() => setShowPopup(false)}
+                  deleteTransaction={deleteTransaction}
+                  id={transactionId}
+                  loading={loading}
+                />
+            )}
+            <h3>Bem vindo, {userInfo.displayName ? userInfo.displayName : userInfo.email}<div className='edit-icon' onClick={() => navigate('/edit-user')}></div></h3>
+            <h5>{new Date().toLocaleDateString()} - {hora.toLocaleTimeString()}</h5>
+            <div>
+              <button type="button" onClick={handleSignOut}>Sair</button>
             </div>
+            
+            <br/>
+            <button type="button" onClick={handleFormTransaction}>+ Nova transação</button>
 
-            <div className='filtersDate'>
-              <div className="filtersWrap">
-                <div className="inputWrap">
-                  <input type="radio" id="yesterday" name="type" value="yesterday"
-                    checked={filterDate === 'yesterday'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                  />
-                  <label className="filterDate" htmlFor="yesterday">Ontem</label>
-                </div>
-
-                <div className="inputWrap">
-                  <input type="radio" id="today" name="type" value="today"
-                    checked={filterDate === 'today'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                  />
-                  <label className="filterDate" htmlFor="today">Hoje</label>
-                </div>
-                
-                <div className="inputWrap">
-                  <input type="radio" id="week" name="type" value="week"
-                    checked={filterDate === 'week'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                  />
-                  <label className="filterDate" htmlFor="week">Esta semana</label>
-                </div>
-
-                <div className="inputWrap">
-                  <input type="radio" id="month" name="type" value="month"
-                    checked={filterDate === 'month'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                  />
-                  <label className="filterDate" htmlFor="month">Este mês</label>
-                </div>
-                
-                <div className="inputWrap">
-                  <input type="radio" id="year" name="type" value="year"
-                    checked={filterDate === 'year'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
-                  />
-                  <label className="filterDate" htmlFor="year">Este ano</label>
-                </div>
+            <div className='cards-informations'>
+              <div className='card-info card-balance'>
+                <h4>Saldo:</h4>
+                <span>R$ {parseFloat(totalBalance).toFixed(2)}</span>
               </div>
+
+              <button type='button' className={buttonIncomes ? 'card-info card-incomes filtered' :'card-info card-incomes' } onClick={(e) => handleFilterByType(e, 'income')}>
+                <h4>Entradas:</h4>
+                <span>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
+              </button>
+
+              <button className={buttonExpenses ? 'card-info card-expenses filtered' :'card-info card-expenses' } onClick={(e) => handleFilterByType(e, 'expense')}>
+                <h4>Saídas:</h4>
+                <span>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
+              </button>
             </div>
 
             <div>
-              <h4 style={{marginBottom: '0px'}}>Transações:</h4>
-              <small>{totalResults} transações encontradas</small>
-              <ul className="transactions-list">
-                {!filterDate && searchTerm === '' && !searchByType && transactions.map((item, index) => (
-                  <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                ))}
-                {!filterDate ? (
-                  searchTerm === '' && !searchByType && transactions.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                  )),
-                  searchByType && searchResults.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                  )),
-                  searchTerm !== '' && !searchByType && searchResults.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                  ))
-                ) : (
-                  filterDate && searchResults.map((item, index) => (
-                    <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                  ))
-                )}
-              </ul>
+              <div>
+                <div className="toolbar">
+                  <input
+                    type="text"
+                    name="search"
+                    placeholder='Pesquisar...'
+                    value={searchTerm}
+                    onChange={handleSearch}
+                  />
+                </div>
+
+                <div className='filtersDate'>
+                  <div className="filtersWrap">
+                    <div className="inputWrap">
+                      <input type="radio" id="yesterday" name="type" value="yesterday"
+                        checked={filterDate === 'yesterday'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                      />
+                      <label className="filterDate" htmlFor="yesterday">Ontem</label>
+                    </div>
+
+                    <div className="inputWrap">
+                      <input type="radio" id="today" name="type" value="today"
+                        checked={filterDate === 'today'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                      />
+                      <label className="filterDate" htmlFor="today">Hoje</label>
+                    </div>
+                    
+                    <div className="inputWrap">
+                      <input type="radio" id="week" name="type" value="week"
+                        checked={filterDate === 'week'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                      />
+                      <label className="filterDate" htmlFor="week">Esta semana</label>
+                    </div>
+
+                    <div className="inputWrap">
+                      <input type="radio" id="month" name="type" value="month"
+                        checked={filterDate === 'month'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                      />
+                      <label className="filterDate" htmlFor="month">Este mês</label>
+                    </div>
+                    
+                    <div className="inputWrap">
+                      <input type="radio" id="year" name="type" value="year"
+                        checked={filterDate === 'year'} onChange={handleFilterDateChange} onClick={handleFilterDateChange}
+                      />
+                      <label className="filterDate" htmlFor="year">Este ano</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 style={{marginBottom: '0px'}}>Transações:</h4>
+                  <small>{totalResults} transações encontradas</small>
+                  <ul className="transactions-list">
+                    {!filterDate && searchTerm === '' && !searchByType && transactions.map((item, index) => (
+                      <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
+                    ))}
+                    {!filterDate ? (
+                      searchTerm === '' && !searchByType && transactions.map((item, index) => (
+                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
+                      )),
+                      searchByType && searchResults.map((item, index) => (
+                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
+                      )),
+                      searchTerm !== '' && !searchByType && searchResults.map((item, index) => (
+                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
+                      ))
+                    ) : (
+                      filterDate && searchResults.map((item, index) => (
+                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </>
+        </> : (
+          <Outlet />
+        )}
+      </>
   ) : (
-    <Navigate to="/" replace />
+    <Navigate to="/login" replace />
   );
 }
 

@@ -11,14 +11,18 @@ import NotFound from './pages/notFound';
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" exact element={<LoginForm />}/>
-        <Route path="/register" element={<Register />}/>
-        <Route path="/home" element={<Home />}/>
-        <Route path="/new-transaction" element={<TransactionForm />}/>
-        <Route path="/edit-transaction/:id" element={<TransactionForm  />}/>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className='mainContainer'>
+        <Routes>
+          <Route path="/login" exact element={<LoginForm />}/>
+          <Route path="/register" element={<Register />}/>
+          <Route path="*" element={<NotFound />} />
+          
+          <Route path="/" exact element={<Home />}>
+            <Route path="/new-transaction" element={<TransactionForm />}/>
+            <Route path="/edit-transaction/:id" element={<TransactionForm  />}/>
+          </Route>
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }

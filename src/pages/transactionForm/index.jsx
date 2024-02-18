@@ -214,7 +214,7 @@ const handleNewTransaction = async (e) => {
                         </div>
 
                         <br/>
-                        <button type="button" className='secondaryBtn' onClick={() => navigate('/home')}>Voltar</button>
+                        <button type="button" className='secondaryBtn' onClick={() => navigate('/')}>Voltar</button>
                         <button type="submit">{id ? 'Editar' : 'Registrar'} transação</button>
                     </div>
                 </form>

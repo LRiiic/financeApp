@@ -48,7 +48,7 @@ function Register() {
       setDisplayName('');
 
       console.log('Usuário logado com sucesso!', user);
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       console.error('Erro ao criar usuário:', error);
     }
@@ -86,12 +86,12 @@ function Register() {
           />
 
           <button type="submit">Cadastrar</button>
-          <a onClick={() => navigate('/')}>Voltar</a>
+          <a onClick={() => navigate('/login')}>Voltar</a>
         </form>
       </div>
     </>
   ) : (
-    <Navigate to="/home" replace />
+    <Navigate to="/" replace />
   );
 }
 
