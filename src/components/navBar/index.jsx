@@ -61,10 +61,10 @@ function NavBar() {
       
       <h1>
         <a href="/">
-          <img src={financeFlexLogo} alt="Finance Flex logo" width="250"/>
+          <img src={financeFlexLogo} alt="Finance Flex logo" width="50%"/>
         </a>
       </h1>
-      
+
       <button className={securityView ? 'securityView active' : 'securityView'} type="button" onClick={handleSecurityView}><i></i></button>
     </nav>
   );

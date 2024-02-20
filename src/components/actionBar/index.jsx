@@ -1,33 +1,27 @@
 import { React } from "react";
-import financeFlexLogo from '../../assets/finance-flex.svg'
 import '../../index.css';
 import './style.css';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 
 function ActionBar() {
-  const navigate = useNavigate();
   return (
     <div className="action-bar">
-      <ul>
-        <li>
-          <button className="action-icon home" type="button" onClick={() => navigate('/')}>
+      <div className="wrapper">
+        <NavLink to="/" className={({ isActive }) => isActive ? 'action-icon home active' : 'action-icon home'}>
             <i></i>
             <span>Início</span>
-          </button>
-        </li>
-        <li>
-          <button className="action-icon new-transaction main-action" type="button" onClick={() => navigate('/new-transaction')}>
+        </NavLink>
+        <NavLink to="/new-transaction" className={({ isActive }) => isActive ? 'action-icon new-transaction active' : 'action-icon new-transaction'}>
+          <div className="main-action">
             <i></i>
-          </button>
-        </li>
-        <li>
-          <button className="action-icon profile" type="button" onClick={() => navigate('/profile')}>
-            <i></i>
-            <span>Perfil</span>
-          </button>
-        </li>
-      </ul>
+          </div>
+        </NavLink>
+        <NavLink to="/profile" className={({ isActive }) => isActive ? 'action-icon profile active' : 'action-icon profile'}>
+          <i></i>
+          <span>Perfil</span>
+        </NavLink>
+      </div>
     </div>
   );
 }

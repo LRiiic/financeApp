@@ -19,16 +19,6 @@ body,
   -moz-osx-font-smoothing: grayscale;
 
   scrollbar-width: 8px;
-  /* --height-scroll-wrap: 100%;
-  --scroll-color-thumb-default: #00000026;
-  --scroll-color-thumb-hover: #00000042;
-  --scroll-color-thumb-active: #0006;
-  --scroll-color-track-default: #0000;
-  --scroll-color-track-hover: #0000;
-  --scroll-color-track-active: #0000;
-  --scroll-border-radius-thumb: 4px;
-  --scroll-border-radius-track: 4px;
-  --scroll-auto-hide: visible; */
 }
 
 *::-webkit-scrollbar {
@@ -189,7 +179,6 @@ button::hover {
   align-items: center;
   justify-content: flex-start;
   flex-wrap: wrap;
-  width: 48%;
   height: 100%;
   padding: 10px;
   margin: 5px 2.5px;
@@ -200,12 +189,25 @@ button::hover {
 .card-info i{
   width: 50px;
   height: 50px;
+  max-height: 100%;
+  max-width: 30%;
   border-radius: 6px;
-  margin-right: 10px;
+  margin-right: 5px;
+}
+
+.card-incomes i,
+.card-expenses i {
+  width: 40px;
+  height: 40px;
 }
 
 .card-info h4 {
   margin: 0;
+  font-size: 0.75rem;
+}
+
+.card-info .content {
+  font-size: 0.8rem;
 }
 
 i {
@@ -229,7 +231,7 @@ i {
 }
 
 .card-balance i{
-  background-color: #b3c6d4;
+  background-color: #aac7dd;
   background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSI1MHB4IiBoZWlnaHQ9IjUwcHgiIHZpZXdCb3g9IjAsMCwyNTYsMjU2Ij48ZyBmaWxsPSIjNGE4MWFiIiBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0iYnV0dCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2UtZGFzaGFycmF5PSIiIHN0cm9rZS1kYXNob2Zmc2V0PSIwIiBmb250LWZhbWlseT0ibm9uZSIgZm9udC13ZWlnaHQ9Im5vbmUiIGZvbnQtc2l6ZT0ibm9uZSIgdGV4dC1hbmNob3I9Im5vbmUiIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTogbm9ybWFsIj48ZyB0cmFuc2Zvcm09InNjYWxlKDUuMTIsNS4xMikiPjxwYXRoIGQ9Ik0zNC42MjUsMy4wMzEyNWMtMC43ODEyNSwwLjAxMTcyIC0xLjY0NDUzLDAuMTgzNTkgLTIuNzE4NzUsMC40Njg3NWMtMy4wODIwMywwLjgxMjUgLTIwLjgxMjUsNS43MTg3NSAtMjAuODEyNSw1LjcxODc1Yy0wLjAzMTI1LDAuMDA3ODEgLTAuMDYyNSwwLjAxOTUzIC0wLjA5Mzc1LDAuMDMxMjVjLTIuODA4NTksMS4wNTg1OSAtNC41NzgxMiwyLjA1NDY5IC01LjY1NjI1LDMuNWMtMS4wNzAzMSwxLjQzNzUgLTEuMzA4NTksMy4xNjQwNiAtMS4zMTI1LDUuMjE4NzVjMCwwLjAxMTcyIDAsMC4wMTk1MyAwLDAuMDMxMjV2MC42MjVjLTAuMDExNzIsMC4xMjUgLTAuMDMxMjUsMC4yNSAtMC4wMzEyNSwwLjM3NXYyMS4zNzVjMCwzLjA4OTg0IDIuNTM1MTYsNS42MjUgNS42MjUsNS42MjVoMzAuNzVjMy4wODk4NCwwIDUuNjI1LC0yLjUzNTE2IDUuNjI1LC01LjYyNXYtMjEuNTMxMjVjMCwtMy4xODc1IC0yLjg1MTU2LC01Ljg0Mzc1IC02LC01Ljg0Mzc1aC0zMGMtMS4xMjEwOSwwIC0yLjEyODkxLDAuMzIwMzEgLTIuOTY4NzUsMC44NDM3NWMwLjcyNjU2LC0wLjg5NDUzIDIuMDk3NjYsLTEuNzM4MjggNC41OTM3NSwtMi42ODc1YzAuMDI3MzQsLTAuMDExNzIgMC4wMzUxNiwtMC4wMTk1MyAwLjA2MjUsLTAuMDMxMjVjMC4xMTMyOCwtMC4wMzEyNSAxNy43MzgyOCwtNC45MDIzNCAyMC43MTg3NSwtNS42ODc1YzAuOTkyMTksLTAuMjYxNzIgMS43MzQzOCwtMC4zOTg0NCAyLjI1LC0wLjQwNjI1YzAuNTE1NjMsLTAuMDA3ODEgMC43NTc4MSwwLjA3MDMxIDAuODc1LDAuMTU2MjVjMC4xMTcxOSwwLjA4NTk0IDAuMjE0ODQsMC4yNTM5MSAwLjMxMjUsMC42NTYyNWMwLjA5NzY2LDAuNDAyMzQgMC4xNTYyNSwxLjAxNTYzIDAuMTU2MjUsMS44MTI1djMuMzQzNzVoMnYtMy4zNDM3NWMwLC0wLjg2NzE5IC0wLjA1NDY5LC0xLjYwMTU2IC0wLjIxODc1LC0yLjI4MTI1Yy0wLjE2NDA2LC0wLjY3OTY5IC0wLjQ4NDM3LC0xLjM0NzY2IC0xLjA2MjUsLTEuNzgxMjVjLTAuNTc4MTIsLTAuNDMzNTkgLTEuMzEyNSwtMC41NzQyMiAtMi4wOTM3NSwtMC41NjI1ek0xMCwxNWgzMGMxLjk0OTIyLDAgNCwxLjkzNzUgNCwzLjg0Mzc1djIxLjUzMTI1YzAsMi4wMDc4MSAtMS42MTcxOSwzLjYyNSAtMy42MjUsMy42MjVoLTMwLjc1Yy0yLjAxMTcyLDAgLTMuNjI1LC0xLjYxMzI4IC0zLjYyNSwtMy42MjV2LTE5LjkwNjI1bDAuMDMxMjUsLTEuNjU2MjVjMC4wNTg1OSwtMC42Nzk2OSAwLjQwNjI1LC0xLjY0ODQ0IDEuMDYyNSwtMi40MDYyNWMwLjcxNDg0LC0wLjgyODEyIDEuNjkxNDEsLTEuNDA2MjUgMi45MDYyNSwtMS40MDYyNXpNMzguNSwyN2MtMS4zODI4MSwwIC0yLjUsMS4xMTcxOSAtMi41LDIuNWMwLDEuMzgyODEgMS4xMTcxOSwyLjUgMi41LDIuNWMxLjM3ODkxLDAgMi41LC0xLjExNzE5IDIuNSwtMi41YzAsLTEuMzgyODEgLTEuMTIxMDksLTIuNSAtMi41LC0yLjV6Ij48L3BhdGg+PC9nPjwvZz48L3N2Zz4=');
 }
 
@@ -237,12 +239,10 @@ i {
 .card-incomes h4,
 .card-expenses h4 {
   text-align: start;
-  font-size: 13px;
   color: #5c5c5c;
 }
 
 .card-incomes {
-  width: 48%;
   cursor: pointer;
   background-color: #9fd1c3;
   border-color: transparent;
@@ -259,7 +259,6 @@ i {
 }
 
 .card-expenses {
-  width: 48%;
   cursor: pointer;
   background-color: #e0b1b1;
   border-color: transparent;

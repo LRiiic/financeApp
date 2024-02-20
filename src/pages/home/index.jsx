@@ -2,7 +2,7 @@ import financeFlexLogo from '../../assets/finance-flex.svg'
 import '../../App.css'
 import '../../index.css'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Navigate, Outlet, Route, useNavigate } from 'react-router-dom'
 import { getAuth, signOut } from "firebase/auth";
 import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore"; 
@@ -43,6 +43,17 @@ function Home() {
   const [transactionId, setTransactionId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+
+
+  const iconIncomes = useRef(null);
+  const iconExpenses = useRef(null);
+
+  useEffect(() => {
+    if (iconIncomes.current) {
+      iconIncomes.current.style.height = iconIncomes.current.offsetWidth + 'px';
+      iconExpenses.current.style.height = iconExpenses.current.offsetWidth + 'px';
+    }
+  }, [iconIncomes]);
 
   const handleshowPopup = (message, type, id) => {
     setMessagePopup(message)
@@ -282,7 +293,7 @@ function Home() {
               </div>
 
               <button type='button' className={buttonIncomes ? 'card-info card-incomes filtered' :'card-info card-incomes' } onClick={(e) => handleFilterByType(e, 'income')}>
-                <i></i>
+                <i ref={iconIncomes}></i>
                 <div className="content">
                   <h4>Entradas:</h4>
                   <span className='useSecurity'>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
@@ -290,7 +301,7 @@ function Home() {
               </button>
 
               <button className={buttonExpenses ? 'card-info card-expenses filtered' :'card-info card-expenses' } onClick={(e) => handleFilterByType(e, 'expense')}>
-                <i></i>
+                <i ref={iconExpenses}></i>
                 <div className="content">
                   <h4>Saídas:</h4>
                   <span className='useSecurity'>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
