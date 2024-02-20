@@ -58,7 +58,7 @@ function TransactionCard({ item, handleshowPopup }) {
             <br/>
             <small className="transaction-date">{formattedDate(item.dateTime)}</small>
         </p>   
-        <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
+        <p className='transaction-value useSecurity'>R$ {parseFloat(item.value).toFixed(2)}</p>
     </li>
     </>
   );

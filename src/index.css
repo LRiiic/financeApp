@@ -206,7 +206,7 @@ button::hover {
 .transactions-list {
   list-style: none;
   padding: 0;
-  padding-bottom: 30px;
+  padding-bottom: 50px;
 }
 
 .transaction-card {
@@ -447,4 +447,10 @@ input:checked ~ .filterDate {
     100% {
         transform: rotate(360deg);
     }
-  } 
+  }
+
+  .textSecurity .useSecurity {
+    -webkit-text-security: disc;
+    -moz-text-security: disc;
+    text-security: disc;
+  }

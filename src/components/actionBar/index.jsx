@@ -10,9 +10,23 @@ function ActionBar() {
   return (
     <div className="action-bar">
       <ul>
-        <li><button type="button" onClick={() => navigate('/')}>Home</button></li>
-        <li><button type="button" onClick={() => navigate('/new-transaction')}>Nova Transação</button></li>
-        <li><button type="button" onClick={() => navigate('/profile')}>Perfil</button></li>
+        <li>
+          <button className="action-icon home" type="button" onClick={() => navigate('/')}>
+            <i></i>
+            <span>Início</span>
+          </button>
+        </li>
+        <li>
+          <button className="action-icon new-transaction main-action" type="button" onClick={() => navigate('/new-transaction')}>
+            <i></i>
+          </button>
+        </li>
+        <li>
+          <button className="action-icon profile" type="button" onClick={() => navigate('/profile')}>
+            <i></i>
+            <span>Perfil</span>
+          </button>
+        </li>
       </ul>
     </div>
   );

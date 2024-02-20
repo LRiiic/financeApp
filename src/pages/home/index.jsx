@@ -166,27 +166,8 @@ function Home() {
   }
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setHora(new Date());
-    }, 1000);
-
     handleGetTransactions();
-
-    return () => clearInterval(intervalId);
   },[])
-
-  const handleSignOut = async (e) => {
-    e.preventDefault();
-    const auth = getAuth();
-    signOut(auth).then(() => {
-      navigate('/login');
-      localStorage.removeItem('auth');
-      setIsAuthenticated(false);
-      console.log('Deslogado com sucesso!');
-    }).catch((error) => {
-      throw error;
-    });
-  }
 
   const handleFormTransaction = (e) => {
     e.preventDefault();
@@ -290,28 +271,21 @@ function Home() {
                 />
             )}
             <h3>Bem vindo, {userInfo.displayName ? userInfo.displayName : userInfo.email}<div className='edit-icon' onClick={() => navigate('/edit-user')}></div></h3>
-            <h5>{new Date().toLocaleDateString()} - {hora.toLocaleTimeString()}</h5>
-            <div>
-              <button type="button" onClick={handleSignOut}>Sair</button>
-            </div>
-            
-            <br/>
-            <button type="button" onClick={handleFormTransaction}>+ Nova transação</button>
 
             <div className='cards-informations'>
               <div className='card-info card-balance'>
                 <h4>Saldo:</h4>
-                <span>R$ {parseFloat(totalBalance).toFixed(2)}</span>
+                <span className='useSecurity'>R$ {parseFloat(totalBalance).toFixed(2)}</span>
               </div>
 
               <button type='button' className={buttonIncomes ? 'card-info card-incomes filtered' :'card-info card-incomes' } onClick={(e) => handleFilterByType(e, 'income')}>
                 <h4>Entradas:</h4>
-                <span>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
+                <span className='useSecurity'>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
               </button>
 
               <button className={buttonExpenses ? 'card-info card-expenses filtered' :'card-info card-expenses' } onClick={(e) => handleFilterByType(e, 'expense')}>
                 <h4>Saídas:</h4>
-                <span>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
+                <span className='useSecurity'>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
               </button>
             </div>
 
