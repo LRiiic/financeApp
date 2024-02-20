@@ -4,9 +4,12 @@ import '../../index.css';
 import './style.css';
 import { getAuth, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function NavBar() {
   const [securityView, setSecurityView] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (localStorage.getItem('textSecurity') === 'true') {

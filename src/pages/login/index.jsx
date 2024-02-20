@@ -1,6 +1,7 @@
 import financeFlexLogo from '../../assets/finance-flex.svg'
 import '../../App.css'
 import '../../index.css'
+import './style.css'
 
 import { useState } from 'react';
 import { auth, provider, db } from '../../config/firebase-config';

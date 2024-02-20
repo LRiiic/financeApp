@@ -19,6 +19,7 @@ body,
   -moz-osx-font-smoothing: grayscale;
 
   scrollbar-width: 8px;
+  padding-bottom: 70px;
 }
 
 *::-webkit-scrollbar {
@@ -114,7 +115,11 @@ h1 {
   margin-bottom: 10px;
 }
 
-.formLogin input[type="button"],
+.formLogin button[type="submit"] {
+  margin-bottom: 10px;
+}
+
+.formLogin input[type="submit"],
 .formLogin button {
   cursor: pointer;
   letter-spacing: 0.05rem;
@@ -125,7 +130,7 @@ h1 {
   outline: none;
 }
 
-.formLogin input[type="button"]:hover,
+.formLogin input[type="submit"]:hover,
 .formLogin button:hover {
   opacity: 0.8;
 }
@@ -282,7 +287,6 @@ i {
 .transactions-list {
   list-style: none;
   padding: 0;
-  padding-bottom: 50px;
 }
 
 .transaction-card {
