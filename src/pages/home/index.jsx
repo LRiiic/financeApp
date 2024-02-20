@@ -270,22 +270,31 @@ function Home() {
                   loading={loading}
                 />
             )}
-            <h3>Bem vindo, {userInfo.displayName ? userInfo.displayName : userInfo.email}<div className='edit-icon' onClick={() => navigate('/edit-user')}></div></h3>
+            <h3 className='welcome'>Olá, <span className='userName'>{userInfo.displayName ? userInfo.displayName : userInfo.email}</span></h3>
 
             <div className='cards-informations'>
               <div className='card-info card-balance'>
-                <h4>Saldo:</h4>
-                <span className='useSecurity'>R$ {parseFloat(totalBalance).toFixed(2)}</span>
+                <i></i>
+                <div className="content">
+                  <h4>Saldo:</h4>
+                  <span className='useSecurity'>R$ {parseFloat(totalBalance).toFixed(2)}</span>
+                </div>
               </div>
 
               <button type='button' className={buttonIncomes ? 'card-info card-incomes filtered' :'card-info card-incomes' } onClick={(e) => handleFilterByType(e, 'income')}>
-                <h4>Entradas:</h4>
-                <span className='useSecurity'>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
+                <i></i>
+                <div className="content">
+                  <h4>Entradas:</h4>
+                  <span className='useSecurity'>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
+                </div>
               </button>
 
               <button className={buttonExpenses ? 'card-info card-expenses filtered' :'card-info card-expenses' } onClick={(e) => handleFilterByType(e, 'expense')}>
-                <h4>Saídas:</h4>
-                <span className='useSecurity'>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
+                <i></i>
+                <div className="content">
+                  <h4>Saídas:</h4>
+                  <span className='useSecurity'>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
+                </div>
               </button>
             </div>
 
