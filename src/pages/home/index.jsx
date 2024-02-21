@@ -11,6 +11,7 @@ import { db } from "../../config/firebase-config.js";
 import NavBar from '../../components/navBar';
 import ActionBar from '../../components/actionBar';
 import TransactionCard from '../../components/transactionCard'
+import TransactionsList from '../../components/transactionsList';
 import Popup from '../../components/popUp/index.jsx';
 
 function Home() {
@@ -132,6 +133,7 @@ function Home() {
     setSearchResults(filteredTransactions);
   }
   async function handleGetTransactions() {
+    setFetching(true);
     try {
       // Obter os documentos da coleção
       const q = query(
@@ -171,6 +173,7 @@ function Home() {
 
       const totalBalance = totalIncomes - totalExpenses;
       setTotalBalance(totalBalance);
+      setFetching(false);
     } catch (error) {
       console.error('Erro ao buscar dados do Firestore:', error);
     }
@@ -287,24 +290,24 @@ function Home() {
               <div className='card-info card-balance'>
                 <i></i>
                 <div className="content">
-                  <h4>Saldo:</h4>
-                  <span className='useSecurity'>R$ {parseFloat(totalBalance).toFixed(2)}</span>
+                  <h4 className={fetching ? 'loadingElement' : ''}>Saldo:</h4>
+                  <span className={fetching ? 'useSecurity loadingElement' : 'useSecurity'}>R$ {parseFloat(totalBalance).toFixed(2)}</span>
                 </div>
               </div>
 
               <button type='button' className={buttonIncomes ? 'card-info card-incomes filtered' :'card-info card-incomes' } onClick={(e) => handleFilterByType(e, 'income')}>
                 <i ref={iconIncomes}></i>
                 <div className="content">
-                  <h4>Entradas:</h4>
-                  <span className='useSecurity'>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
+                  <h4 className={fetching ? 'loadingElement' : ''}>Entradas:</h4>
+                  <span className={fetching ? 'useSecurity loadingElement' : 'useSecurity'}>R$ {parseFloat(totalIncomes).toFixed(2)}</span>
                 </div>
               </button>
 
               <button className={buttonExpenses ? 'card-info card-expenses filtered' :'card-info card-expenses' } onClick={(e) => handleFilterByType(e, 'expense')}>
                 <i ref={iconExpenses}></i>
                 <div className="content">
-                  <h4>Saídas:</h4>
-                  <span className='useSecurity'>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
+                  <h4 className={fetching ? 'loadingElement' : ''}>Saídas:</h4>
+                  <span className={fetching ? 'useSecurity loadingElement' : 'useSecurity'}>R$ {parseFloat(totalExpenses).toFixed(2)}</span>
                 </div>
               </button>
             </div>
@@ -360,29 +363,20 @@ function Home() {
                   </div>
                 </div>
 
-                <div>
+                <div className="transactions">
                   <h4 style={{marginBottom: '0px'}}>Transações:</h4>
-                  <small>{totalResults} transações encontradas</small>
-                  <ul className="transactions-list">
-                    {!filterDate && searchTerm === '' && !searchByType && transactions.map((item, index) => (
-                      <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                    ))}
-                    {!filterDate ? (
-                      searchTerm === '' && !searchByType && transactions.map((item, index) => (
-                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                      )),
-                      searchByType && searchResults.map((item, index) => (
-                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                      )),
-                      searchTerm !== '' && !searchByType && searchResults.map((item, index) => (
-                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                      ))
-                    ) : (
-                      filterDate && searchResults.map((item, index) => (
-                        <TransactionCard key={item.id} item={item} handleGetTransactions={handleGetTransactions} handleshowPopup={handleshowPopup}/>
-                      ))
-                    )}
-                  </ul>
+                  <small className={fetching ? 'loadingElement' : ''}>{totalResults} transações encontradas</small>
+                  
+                  { fetching ? <div className="loader"></div> 
+                    : <TransactionsList 
+                    transactions={transactions}
+                    searchTerm={searchTerm}
+                    searchResults={searchResults}
+                    searchByType={searchByType}
+                    filterDate={filterDate}
+                    handleGetTransactions={handleGetTransactions}
+                    handleshowPopup={handleshowPopup}/>
+                  }
                 </div>
               </div>
             </div>

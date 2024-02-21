@@ -212,6 +212,8 @@ button::hover {
 }
 
 .card-info .content {
+  display: flex;
+  flex-direction: column;
   font-size: 0.8rem;
 }
 
@@ -284,7 +286,14 @@ i {
   opacity: 0.8;
 }
 
+.transactions {
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+}
+
 .transactions-list {
+  width: 100%;
   list-style: none;
   padding: 0;
   margin-bottom: 70px;
@@ -502,7 +511,7 @@ input:checked ~ .filterDate {
 .loader {
   width: 48px;
   height: 48px;
-  border: 5px solid #FFF;
+  border: 5px solid #00594c;
   border-bottom-color: transparent;
   border-radius: 50%;
   display: inline-block;
@@ -520,6 +529,36 @@ input:checked ~ .filterDate {
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
 }
+
+.loadingElement {
+  background-color: rgba(150, 150, 150, 0.5)!important;
+  border-radius: 8px;
+  margin-bottom: 2px!important;
+  color: transparent!important;
+  width: fit-content!important;
+  max-height: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loadingElement::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(90deg,rgba(255, 255, 255, 0) 0,rgba(255, 255, 255, 0.2) 20%,rgba(255, 255, 255, 0.5) 60%,rgba(255, 255, 255, 0));
+  animation: shimmer 1s infinite;
+  content: '';
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 
 
   @keyframes rotation {
