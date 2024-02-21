@@ -3,7 +3,7 @@ import '../../App.css'
 import '../../index.css'
 
 import { useEffect, useState, useRef } from 'react'
-import { Navigate, Outlet, Route, useNavigate } from 'react-router-dom'
+import { Navigate, Outlet, Route, useNavigate, useLocation } from 'react-router-dom'
 import { getAuth, signOut } from "firebase/auth";
 import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
@@ -19,6 +19,7 @@ function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(userInfo ? userInfo.isAuth : false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [hora, setHora] = useState(new Date());
 
@@ -179,8 +180,8 @@ function Home() {
   }
 
   useEffect(() => {
-    handleGetTransactions();
-  },[])
+    location.pathname === '/' && handleGetTransactions();
+  }, [location]);
 
   const handleFormTransaction = (e) => {
     e.preventDefault();
