@@ -138,7 +138,7 @@ const handleNewTransaction = async (e) => {
 
     return isAuthenticated ? (
         <>
-            <div>
+            <div className='transactionPage'>
             {showPopup && (
                 <Popup
                 message={messagePopup}

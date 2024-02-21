@@ -1,0 +1,11 @@
+.loginPage {
+  display: flex;
+  flex-direction: column;
+  place-content: center;
+  height: 100vh;
+}
+
+.loginPage h1,
+.loginPage h3 {
+  margin-top: 0;
+}

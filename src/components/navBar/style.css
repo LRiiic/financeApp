@@ -8,9 +8,6 @@ nav {
 
 nav h1{
   margin: 0;
-}
-
-nav h1 a {
   display: flex;
   justify-content: center;
 }

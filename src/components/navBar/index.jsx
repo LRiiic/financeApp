@@ -63,9 +63,7 @@ function NavBar() {
       <button className="logout" type="button" onClick={handleSignOut}><i></i><span>Sair</span></button>
       
       <h1>
-        <a href="/">
-          <img src={financeFlexLogo} alt="Finance Flex logo" width="50%"/>
-        </a>
+        <img src={financeFlexLogo} alt="Finance Flex logo" width="50%"/>
       </h1>
 
       <button className={securityView ? 'securityView active' : 'securityView'} type="button" onClick={handleSecurityView}><i></i></button>

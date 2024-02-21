@@ -1,3 +1,15 @@
+.transactionPage {
+  display: flex;
+  flex-direction: column;
+  place-content: center;
+  height: calc(100vh - 50px);
+  box-sizing: border-box;
+}
+
+.transactionPage .title {
+  margin-top: 0;
+}
+
 .formNewTransaction input[type='text'],
 .formNewTransaction input[type='number'],
 .formNewTransaction input[type='date'] {

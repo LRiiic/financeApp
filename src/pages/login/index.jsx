@@ -53,10 +53,12 @@ function Login() {
 
   return !isAuthenticated ? (
     <>
-      <div>
+      <div className='loginPage'>
         <h1>
           <img src={financeFlexLogo} loading="lazy" width="250" alt="Finance Flex logo"/>
         </h1>
+
+        <h3>Login</h3>
 
         <form className="formLogin" onSubmit={handleLogin}>
           <label>Email</label>
@@ -74,8 +76,8 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit">Login</button>
-          <button type="button" className='secondaryBtn margin-reset' onClick={() => navigate('/register')}>Cadastre-se</button>
+          <button type="submit">Entrar</button>
+          <button type="button" className='secondaryBtn margin-reset' onClick={() => navigate('/register')}>Criar uma conta</button>
         </form>
       </div>
     </>

@@ -57,10 +57,12 @@ function Register() {
 
   return !isAuthenticated ? (
     <>
-      <div>
+      <div className='loginPage'>
         <h1>
-          Cadastre-se
+          <img src={financeFlexLogo} loading="lazy" width="250" alt="Finance Flex logo"/>
         </h1>
+
+        <h3>Criar uma conta</h3>
 
         <form className="formLogin" onSubmit={handleSignUp}>
           <label>Nome</label>
@@ -85,7 +87,7 @@ function Register() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit">Cadastrar</button>
+          <button type="submit">Criar conta</button>
           <a onClick={() => navigate('/login')}>Voltar</a>
         </form>
       </div>
