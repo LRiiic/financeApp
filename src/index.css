@@ -45,6 +45,10 @@ textarea {
   font-size: 16px!important;
 }
 
+.error {
+  color: red;
+}
+
 /* Popup.css */
 .popup {
   position: fixed;
@@ -113,6 +117,8 @@ h1 {
   border-radius: 8px;
   outline: none;
   margin-bottom: 10px;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .formLogin button[type="submit"] {
@@ -130,9 +136,9 @@ h1 {
   outline: none;
 }
 
-.formLogin input[type="submit"]:hover,
-.formLogin button:hover {
-  opacity: 0.8;
+.formLogin input[type="submit"]:hover:enabled,
+.formLogin button:hover:enabled {
+  background-color: #00443a;
 }
 .formLogin a {
   margin-top: 15px;
@@ -153,7 +159,12 @@ button {
 }
 
 button::hover {
-  opacity: 0.8;
+  background-color: #00443a;
+}
+
+button:disabled {
+  cursor: initial;
+  opacity: 0.6;
 }
 
 @media (prefers-color-scheme: light) {
@@ -541,7 +552,21 @@ input:checked ~ .filterDate {
   overflow: hidden;
 }
 
-.loadingElement::after {
+.cardSkeleton {
+  background-color: rgba(150, 150, 150, 1);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  color: transparent;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 65px;
+  opacity: 0.5;
+  border: 1px solid rgba(150, 150, 150, 1);
+}
+
+.loadingElement::after,
+.cardSkeleton::after {
   position: absolute;
   top: 0;
   right: 0;
@@ -552,6 +577,8 @@ input:checked ~ .filterDate {
   animation: shimmer 1s infinite;
   content: '';
 }
+
+
 
 @keyframes shimmer {
   100% {

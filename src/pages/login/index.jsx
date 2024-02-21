@@ -3,7 +3,7 @@ import '../../App.css'
 import '../../index.css'
 import './style.css'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { auth, provider, db } from '../../config/firebase-config';
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, getDocs, query, where } from "firebase/firestore"; 
@@ -19,8 +19,17 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+  const [minimumRequirements, setMinimumRequirements] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    email.length > 0 && password.length >= 6 ? setMinimumRequirements(true) : setMinimumRequirements(false);
+
+  }, [email, password])
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const user = userCredential.user;
@@ -47,7 +56,14 @@ function Login() {
       navigate('/');
       console.log('Usuário logado com sucesso!');
     } catch (error) {
-      console.error('Erro ao fazer login:', error.message);
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-email' || error.code === 'auth/missing-password') {
+        setErrorMessage('Credenciais inválidas!');
+        console.error(error.message);
+      } else {
+        console.error('Erro ao fazer login:', error.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,8 +91,10 @@ function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          
+          {errorMessage && <p className="error">{errorMessage}</p>}
 
-          <button type="submit">Entrar</button>
+          <button type="submit" disabled={!minimumRequirements}>{loading ? <span className="loader2"></span> : 'Entrar'}</button>
           <button type="button" className='secondaryBtn margin-reset' onClick={() => navigate('/register')}>Criar uma conta</button>
         </form>
       </div>

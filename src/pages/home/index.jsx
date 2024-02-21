@@ -10,7 +10,6 @@ import { db } from "../../config/firebase-config.js";
 
 import NavBar from '../../components/navBar';
 import ActionBar from '../../components/actionBar';
-import TransactionCard from '../../components/transactionCard'
 import TransactionsList from '../../components/transactionsList';
 import Popup from '../../components/popUp/index.jsx';
 
@@ -366,8 +365,8 @@ function Home() {
                 <div className="transactions">
                   <h4 style={{marginBottom: '0px'}}>Transações:</h4>
                   <small className={fetching ? 'loadingElement' : ''}>{totalResults} transações encontradas</small>
-                  
-                  { fetching ? <div className="loader"></div> 
+
+                  { fetching ? <ul className='transactions-list'><li className='cardSkeleton'></li><li className='cardSkeleton'></li></ul>
                     : <TransactionsList 
                     transactions={transactions}
                     searchTerm={searchTerm}

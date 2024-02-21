@@ -6,6 +6,7 @@ import LoginForm from './pages/login';
 import Register from './pages/register';
 import Home from './pages/home';
 import TransactionForm from './pages/transactionForm';
+import Profile from './pages/profile';
 import NotFound from './pages/notFound';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" exact element={<Home />}>
             <Route path="/new-transaction" element={<TransactionForm />}/>
             <Route path="/edit-transaction/:id" element={<TransactionForm  />}/>
+            <Route path="/profile" element={<Profile />}/>
           </Route>
         </Routes>
       </div>
