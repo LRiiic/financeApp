@@ -14,9 +14,9 @@ function Popup({ message, type, onClose, deleteTransaction, id, loading }) {
   return (
     <div className={`popup ${type}`}>
       <p>{message}</p>
-      <button onClick={onClose}>Fechar</button>
+      <button className={type !== 'alert' ? 'primaryBtn' : 'secondaryBtn'} onClick={onClose}>Fechar</button>
       {type === 'alert' && (
-        <button onClick={() => deleteTransaction(id)}>
+        <button className='primaryBtn' onClick={() => deleteTransaction(id)}>
           {loading ? <span className="loader2"></span> : 'Confirmar'}
         </button>
       )}

@@ -181,7 +181,7 @@ const handleNewTransaction = async (e) => {
                             <input
                                 type="date"
                                 id="date"
-                                className={invalid.includes('date') ? 'invalid' : ''}
+                                className={invalid.includes('date') ? 'invalid inputDate' : 'inputDate'}
                                 value={transactionDate}
                                 onChange={(e) => setTransactionDate(e.target.value)}
                             />
@@ -215,7 +215,7 @@ const handleNewTransaction = async (e) => {
 
                         <br/>
                         <button type="button" className='secondaryBtn' onClick={() => navigate('/')}>Voltar</button>
-                        <button type="submit">{id ? 'Editar' : 'Registrar'} transação</button>
+                        <button type="submit" className='primaryBtn'>{id ? 'Editar' : 'Registrar'} transação</button>
                     </div>
                 </form>
             </div>
