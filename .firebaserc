@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "finance-flex"
-  }
+  },
+  "targets": {
+    "finance-flex": {
+      "hosting": {
+        "preview": [
+          "dist"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

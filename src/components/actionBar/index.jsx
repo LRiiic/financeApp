@@ -10,7 +10,6 @@ function ActionBar() {
       <div className="wrapper">
         <NavLink to="/" className={({ isActive }) => isActive ? 'action-icon home active' : 'action-icon home'}>
             <i></i>
-            <span>Início</span>
         </NavLink>
         <NavLink to="/new-transaction" className={({ isActive }) => isActive ? 'action-icon new-transaction active' : 'action-icon new-transaction'}>
           <div className="main-action">
@@ -19,7 +18,6 @@ function ActionBar() {
         </NavLink>
         <NavLink to="/profile" className={({ isActive }) => isActive ? 'action-icon profile active' : 'action-icon profile'}>
           <i></i>
-          <span>Perfil</span>
         </NavLink>
       </div>
     </div>

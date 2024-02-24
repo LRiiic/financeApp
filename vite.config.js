@@ -11,7 +11,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Finance Flex',
-        short_name: 'FinanceFlex',
+        short_name: 'Finance Flex',
         description: "Personal finance app",
         theme_color: '#ffffff',
         icons: [
