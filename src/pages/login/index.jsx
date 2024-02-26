@@ -22,6 +22,8 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [minimumRequirements, setMinimumRequirements] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isIOS, setIsIOS] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
     email.length > 0 && password.length >= 6 ? setMinimumRequirements(true) : setMinimumRequirements(false);
@@ -67,6 +69,50 @@ function Login() {
     }
   };
 
+  useEffect(() => {
+    const userAgent = window.navigator.userAgent;
+    setIsIOS(/iPad|iPhone|iPod/.test(userAgent));
+
+    const handleBeforeInstallPrompt = (event) => {
+      // Salvar o evento para poder chamar prompt() posteriormente
+      setDeferredPrompt(event);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = () => {
+    if (isIOS) {
+      // Exibir mensagem explicativa para dispositivos iOS
+      showIOSInstructions();
+    } else {
+      // Exibir o prompt de instalação quando o botão é clicado
+      deferredPrompt.prompt();
+
+      // Aguardar pelo resultado do prompt
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('O usuário aceitou instalar o PWA');
+        } else {
+          console.log('O usuário cancelou a instalação do PWA');
+        }
+
+        // Limpar a referência ao prompt
+        setDeferredPrompt(null);
+      });
+    }
+  };
+
+
+  const showIOSInstructions = () => {
+    const instructions = 'No iOS, toque no ícone de compartilhamento e selecione "Adicionar à Tela de Início" para instalar este aplicativo.';
+    alert(instructions);
+  };
+
   return !isAuthenticated ? (
     <>
       <div className='loginPage'>
@@ -97,6 +143,9 @@ function Login() {
           <button type="button" className='secondaryBtn margin-reset' onClick={() => navigate('/register')}>Criar uma conta</button>
         </form>
         <a className="forgotPassword" onClick={() => navigate('/reset-password')}>Esqueceu a senha?</a>
+        <button id="install-button" style={{ display: isIOS ? 'flex' : (deferredPrompt ? 'flex' : 'none') }} onClick={handleInstallClick}>
+          <i></i>Adicionar à tela inicial
+        </button>
       </div>
     </>
   ) : (
