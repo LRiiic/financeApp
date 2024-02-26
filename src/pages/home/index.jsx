@@ -4,7 +4,7 @@ import '../../index.css'
 
 import { useEffect, useState, useRef } from 'react'
 import { Navigate, Outlet, Route, useNavigate, useLocation } from 'react-router-dom'
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, sendEmailVerification } from "firebase/auth";
 import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
 
@@ -44,10 +44,41 @@ function Home() {
   const [transactionId, setTransactionId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [resendedEmail, setResendedEmail] = useState(false);
 
 
   const iconIncomes = useRef(null);
   const iconExpenses = useRef(null);
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  const resendEmailVerification = async () => {
+    setFetching(true);
+    if (user) {
+      try {
+        await sendEmailVerification(user);
+        console.log('Email de verificação reenviado');
+      } catch (error) {
+        console.error('Erro ao reenviar o email de verificação:', error);
+      } finally {
+        setFetching(false);
+        setResendedEmail(true);
+      }
+    } else {
+      console.log('Nenhum usuário autenticado');
+      setFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && !user.emailVerified) {
+      setEmailVerified(false);
+    } else {
+      setEmailVerified(true);
+    }
+  }, [user])
 
   useEffect(() => {
     if (iconIncomes.current) {
@@ -91,7 +122,7 @@ function Home() {
 
     updateBalances(filteredTransactions);
     setTotalResults(filteredTransactions.length);
-    setSearchResults(filteredTransactions); // Atualizar o estado dos resultados da busca
+    setSearchResults(filteredTransactions);
   };
 
   const handleFilterByType = (e, type) => {
@@ -135,19 +166,16 @@ function Home() {
   async function handleGetTransactions() {
     setFetching(true);
     try {
-      // Obter os documentos da coleção
       const q = query(
         collection(db, "transactions"),
         where("uid", "==", userInfo.userID),
         orderBy("dateTime", "desc")
       );
       const transactions = await getDocs(q);
-      // Mapear os documentos para os dados
       const fetchedData = transactions.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      // Atualizar o estado com os dados
       setTotalResults(fetchedData.length);
       setTransactions(fetchedData);
 
@@ -155,17 +183,14 @@ function Home() {
       const expenses = await getDocs(q2);
 
       const totalExpenses = expenses.docs.reduce((acc, doc) => {
-        // Adicionar o valor da despesa ao acumulador
         return acc + parseFloat(doc.data().value);
       }, 0);
-      // Atualizar o estado com o total das despesas
       setTotalExpenses(totalExpenses);
 
       const q3 = query(collection(db, "transactions"), where("uid", "==", userInfo.userID), where("type", "==", "income"));
       const incomes = await getDocs(q3);
 
       const totalIncomes = incomes.docs.reduce((acc, doc) => {
-        // Adicionar o valor da despesa ao acumulador
         return acc + parseFloat(doc.data().value);
       }, 0);
 
@@ -182,11 +207,6 @@ function Home() {
   useEffect(() => {
     location.pathname === '/' && handleGetTransactions();
   }, [location]);
-
-  const handleFormTransaction = (e) => {
-    e.preventDefault();
-    navigate('/new-transaction');
-  }
 
   const formatDate = (dateInfo) => {
     var date = new Date(dateInfo);
@@ -269,6 +289,21 @@ function Home() {
   }
 
   return isAuthenticated ? (
+    !emailVerified ? (
+      <div className='unverified'>
+      <NavBar />
+      <h3>Seu email ainda não foi verificado.</h3>
+      <p>Se ainda não recebeu o email de verificação, clique no botão abaixo.</p>
+      <button onClick={resendEmailVerification}>{!fetching ? resendedEmail ? 'Enviar novamente' : 'Reenviar email' : <span className="loader2"></span>}</button>
+      <br />
+      {resendedEmail && <small><strong>Email de verificação reenviado.</strong></small>}
+      <small>
+        Verifique a caixa de Spam e lixo eletrônico.
+      </small>
+      <br />
+      <a href='/'><button>Recarregar página</button></a>
+     </div>
+    ) : (
     <>
       <NavBar />
       <ActionBar />
@@ -384,6 +419,7 @@ function Home() {
           <Outlet />
         )}
       </>
+      )
   ) : (
     <Navigate to="/login" replace />
   );

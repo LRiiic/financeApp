@@ -147,6 +147,11 @@ h1 {
   color: #00594c;
 }
 
+.forgotPassword {
+  margin-top: 15px;
+  color: #00594c;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -621,4 +626,9 @@ input:checked ~ .filterDate {
   -webkit-text-security: disc;
   -moz-text-security: disc;
   text-security: disc;
+}
+
+.unverified {
+  display: flex;
+  flex-direction: column;
 }

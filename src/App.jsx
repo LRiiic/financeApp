@@ -4,6 +4,7 @@ import { auth } from './config/firebase-config';
 import * as firebaseAuth from 'firebase/auth'
 import LoginForm from './pages/login';
 import Register from './pages/register';
+import ResetPassword from './pages/resetPassword';
 import Home from './pages/home';
 import TransactionForm from './pages/transactionForm';
 import Profile from './pages/profile';
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/login" exact element={<LoginForm />}/>
           <Route path="/register" element={<Register />}/>
+          <Route path="/reset-password" element={<ResetPassword />}/>
           <Route path="*" element={<NotFound />} />
           
           <Route path="/" exact element={<Home />}>

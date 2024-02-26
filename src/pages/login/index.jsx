@@ -5,7 +5,7 @@ import './style.css'
 
 import { useEffect, useState } from 'react';
 import { auth, provider, db } from '../../config/firebase-config';
-import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, sendEmailVerification } from 'firebase/auth';
 import { collection, getDocs, query, where } from "firebase/firestore"; 
 import { useNavigate, Navigate } from 'react-router-dom';
 
@@ -91,12 +91,12 @@ function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          
           {errorMessage && <p className="error">{errorMessage}</p>}
 
           <button type="submit" disabled={!minimumRequirements}>{loading ? <span className="loader2"></span> : 'Entrar'}</button>
           <button type="button" className='secondaryBtn margin-reset' onClick={() => navigate('/register')}>Criar uma conta</button>
         </form>
+        <a className="forgotPassword" onClick={() => navigate('/reset-password')}>Esqueceu a senha?</a>
       </div>
     </>
   ) : (

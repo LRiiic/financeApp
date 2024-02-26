@@ -4,7 +4,7 @@ import '../../index.css'
 
 import { useState } from 'react';
 import { auth, provider } from '../../config/firebase-config';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { db } from "../../config/firebase-config.js";
@@ -29,6 +29,7 @@ function Register() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      const userAuth = auth.currentUser;
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
         displayName: displayName
@@ -46,6 +47,17 @@ function Register() {
       setEmail('');
       setPassword('');
       setDisplayName('');
+
+      if (userAuth) {
+        try {
+          await sendEmailVerification(userAuth);
+          console.log('Email de verificação enviado');
+        } catch (error) {
+          console.error('Erro ao enviar o email de verificação:', error);
+        }
+      } else {
+        console.log('Nenhum usuário autenticado');
+      }
 
       console.log('Usuário logado com sucesso!', user);
       navigate('/');
