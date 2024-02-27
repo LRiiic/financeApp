@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate, Route, useNavigate } from 'react-router-dom'
 import { deleteDoc, doc } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
+import { decryptData } from '../../functions.jsx';
 
 function TransactionCard({ item, handleshowPopup }) {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ function TransactionCard({ item, handleshowPopup }) {
 
   return (
     <>
-    <li className={'transaction-card'} date={item.dateTime.substr(0, 10)} onClick={transactionDetails(item.id)}>
+    <li className={'transaction-card'} date={decryptData(item.dateTime).substr(0, 10)} onClick={transactionDetails(item.id)}>
         <span className='transaction-remove'>
             <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
             <div className='remove-icon' onClick={() => handleshowPopup('Deseja remover esta transação?', 'alert', item.id)}></div>
@@ -54,11 +55,11 @@ function TransactionCard({ item, handleshowPopup }) {
         <span className={'transaction-badge transaction-' + item.type}></span>
         
         <p className='transaction-name'>
-            {item.name}
+            {decryptData(item.name)}
             <br/>
-            <small className="transaction-date">{formattedDate(item.dateTime)}</small>
+            <small className="transaction-date">{formattedDate(decryptData(item.dateTime))}</small>
         </p>   
-        <p className='transaction-value'>R$ {parseFloat(item.value).toFixed(2)}</p>
+        <p className='transaction-value'>R$ {parseFloat(decryptData(item.value)).toFixed(2)}</p>
     </li>
     </>
   );

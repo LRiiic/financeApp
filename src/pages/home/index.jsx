@@ -27,6 +27,7 @@ import NavBar from "../../components/navBar";
 import ActionBar from "../../components/actionBar";
 import TransactionsList from "../../components/transactionsList";
 import Popup from "../../components/popUp/index.jsx";
+import { decryptData } from "../../functions.jsx";
 
 function Home() {
   const userInfo = JSON.parse(localStorage.getItem("auth"));
@@ -115,7 +116,7 @@ function Home() {
     let totalIncome = 0;
     let totalExpense = 0;
     filteredTransactions.forEach((transaction) => {
-      const numericValue = parseFloat(transaction.value);
+      const numericValue = parseFloat(decryptData(transaction.value));
       if (!isNaN(numericValue)) {
         if (transaction.type === "income") {
           totalIncome += numericValue;
@@ -134,8 +135,8 @@ function Home() {
     // Filtrar as transações que contenham o termo de busca no campo de descrição
     const filteredTransactions = transactions.filter(
       (transaction) =>
-        transaction.name.toLowerCase().includes(term) ||
-        transaction.value.toString().toLowerCase().includes(term)
+        decryptData(transaction.name).toLowerCase().includes(term) ||
+        decryptData(transaction.value).toString().toLowerCase().includes(term)
     );
 
     updateBalances(filteredTransactions);
@@ -196,6 +197,7 @@ function Home() {
         id: doc.id,
         ...doc.data(),
       }));
+
       setTotalResults(fetchedData.length);
       setTransactions(fetchedData);
 
@@ -207,7 +209,7 @@ function Home() {
       const expenses = await getDocs(q2);
 
       const totalExpenses = expenses.docs.reduce((acc, doc) => {
-        return acc + parseFloat(doc.data().value);
+        return acc + parseFloat(decryptData(doc.data().value));
       }, 0);
       setTotalExpenses(totalExpenses);
 
@@ -219,7 +221,7 @@ function Home() {
       const incomes = await getDocs(q3);
 
       const totalIncomes = incomes.docs.reduce((acc, doc) => {
-        return acc + parseFloat(doc.data().value);
+        return acc + parseFloat(decryptData(doc.data().value));
       }, 0);
 
       setTotalIncomes(totalIncomes);
@@ -282,7 +284,7 @@ function Home() {
     }
 
     const filteredTransactions = transactions.filter((transaction) => {
-      let transactionDate = new Date(transaction.dateTime);
+      let transactionDate = new Date(decryptData(transaction.dateTime));
       transactionDate = formatDate(transactionDate);
       selectedDate = formatDate(selectedDate);
       transactionDate = new Date(

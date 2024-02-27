@@ -11,8 +11,9 @@ import { auth, provider } from '../../config/firebase-config.js';
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, addDoc, doc, getDoc, updateDoc, getDocs, query, where, getAggregateFromServer, sum, getFirestore, Timestamp, serverTimestamp } from "firebase/firestore"; 
 import { db } from "../../config/firebase-config.js";
-
+import { AES } from 'crypto-js';
 import Popup from '../../components/popUp/index.jsx';
+import { decryptData } from '../../functions.jsx';
 
 
 function transactionForm({description = '', value = 0, date = '', type = ''}) {
@@ -60,12 +61,16 @@ function transactionForm({description = '', value = 0, date = '', type = ''}) {
     const handleUpdateTransaction = async (e) => {
         e.preventDefault();
         try {
+            const encryptedTransactionDescription = AES.encrypt(transactionDescription, import.meta.env.VITE_AES_KEY).toString();
+            const encryptedTransactionValue = AES.encrypt(transactionValue.toString(), import.meta.env.VITE_AES_KEY).toString();
+            const encryptedDateTime = AES.encrypt(dataCompleta, import.meta.env.VITE_AES_KEY).toString();
+
             const transactionRef = doc(db, 'transactions', id);
             await updateDoc(transactionRef, {
-                name: transactionDescription,
-                value: transactionValue,
+                name: encryptedTransactionDescription,
+                value: encryptedTransactionValue,
                 type: transactionType,
-                dateTime: transactionDate,
+                dateTime: encryptedDateTime,
             });
             handleshowPopup('Transação editada com sucesso!', 'success');
         } catch (error) {
@@ -119,11 +124,15 @@ const handleNewTransaction = async (e) => {
         const tomorrowHours = new Date();
         const dataCompleta = `${data}T${String(tomorrowHours.getHours()).padStart(2, '0')}:${String(tomorrowHours.getMinutes()).padStart(2, '0')}:00`;
 
+        const encryptedTransactionDescription = AES.encrypt(transactionDescription, import.meta.env.VITE_AES_KEY).toString();
+        const encryptedTransactionValue = AES.encrypt(transactionValue.toString(), import.meta.env.VITE_AES_KEY).toString();
+        const encryptedDateTime = AES.encrypt(dataCompleta, import.meta.env.VITE_AES_KEY).toString();
+
         const docRef = await addDoc(collection(db, "transactions"), {
-            name: transactionDescription,
-            value: transactionValue,
+            name: encryptedTransactionDescription,
+            value: encryptedTransactionValue,
             type: transactionType,
-            dateTime: dataCompleta,
+            dateTime: encryptedDateTime,
             uid: userInfo.userID,
         });
         handleshowPopup('Transação registrada com sucesso!', 'success');
@@ -159,7 +168,7 @@ const handleNewTransaction = async (e) => {
                                 id="description"
                                 className={invalid.includes('description') ? 'invalid' : ''}
                                 placeholder="Descrição da transação"
-                                value={transactionDescription}
+                                value={id ? decryptData(transactionDescription) : transactionDescription}
                                 onChange={(e) => setTransactionDescription(e.target.value)}
                             />
                         </div>
@@ -171,7 +180,7 @@ const handleNewTransaction = async (e) => {
                                 id="value"
                                 className={invalid.includes('value') ? 'invalid' : ''}
                                 placeholder="Valor da transação"
-                                value={transactionValue}
+                                value={id ? decryptData(transactionValue) : transactionValue}
                                 onChange={(e) => setTransactionValue(parseFloat(e.target.value))}
                             />
                         </div>
@@ -182,7 +191,7 @@ const handleNewTransaction = async (e) => {
                                 type="date"
                                 id="date"
                                 className={invalid.includes('date') ? 'invalid inputDate' : 'inputDate'}
-                                value={transactionDate}
+                                value={id ? decryptData(transactionDate) : transactionDate}
                                 onChange={(e) => setTransactionDate(e.target.value)}
                             />
                         </div>
