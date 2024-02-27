@@ -175,6 +175,19 @@ button:disabled {
   opacity: 0.6;
 }
 
+footer {
+  p {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    a {
+      width: fit-content;
+      color: #00594c;
+      text-decoration: none;
+    }
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

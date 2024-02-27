@@ -13,12 +13,14 @@ export default defineConfig({
         name: 'Finance Flex',
         short_name: 'Finance Flex',
         description: "Personal finance app",
+        background_color: '#ffffff',
         theme_color: '#ffffff',
         icons: [
           {
             src: '/pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
+            purpose: 'maskable'
           },
           {
             src: '/pwa-512x512.png',
