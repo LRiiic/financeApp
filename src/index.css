@@ -152,7 +152,8 @@ h1 {
   color: #00594c;
 }
 
-button {
+button,
+.btnPrimary {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -541,6 +542,30 @@ input:checked ~ .filterDate {
   width: 15px;
   height: 15px;
   border: 2px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.loaderContainer {
+  width: 100%;
+  height: 100%;
+  background-color: #FFFFFF;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  display: flex;
+  place-items: center;
+  place-content: center;
+}
+
+.mainLoader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #00594c;
   border-bottom-color: transparent;
   border-radius: 50%;
   display: inline-block;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { auth } from './config/firebase-config';
-import * as firebaseAuth from 'firebase/auth'
+import { getAuth } from "firebase/auth";
 import LoginForm from './pages/login';
 import Register from './pages/register';
 import ResetPassword from './pages/resetPassword';
@@ -11,24 +11,50 @@ import Profile from './pages/profile';
 import NotFound from './pages/notFound';
 
 function App() {
-  return (
-    <BrowserRouter>
-      <div className='mainContainer'>
-        <Routes>
-          <Route path="/login" exact element={<LoginForm />}/>
-          <Route path="/register" element={<Register />}/>
-          <Route path="/reset-password" element={<ResetPassword />}/>
-          <Route path="*" element={<NotFound />} />
-          
-          <Route path="/" exact element={<Home />}>
-            <Route path="/new-transaction" element={<TransactionForm />}/>
-            <Route path="/edit-transaction/:id" element={<TransactionForm  />}/>
-            <Route path="/profile" element={<Profile />}/>
-          </Route>
-        </Routes>
-      </div>
-    </BrowserRouter>
-  );
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  function getUser() {
+    return user && user.emailVerified;
+  }
+
+  const router = createBrowserRouter([
+    {
+      path: "/login",
+      element: <LoginForm />,
+    },
+    {
+      path: "/reset-password",
+      element: <ResetPassword />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
+    },
+    {
+      path: "/",
+      element: <Home />,
+      loader: () => getUser(),
+
+      children: [
+        {
+          path: "/new-transaction",
+          element: <TransactionForm />
+        },
+        {
+          path: "/edit-transaction/:id",
+          element: <TransactionForm />
+        },
+        {
+          path: "/profile",
+          element: <Profile />
+        }
+      ],
+    },
+    { path: "*", element: <NotFound /> }
+  ]);
+
+  return <div className='mainContainer'><RouterProvider router={router} /></div>
 }
 
 export default App;
