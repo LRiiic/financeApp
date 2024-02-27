@@ -46,9 +46,9 @@ function transactionForm({description = '', value = 0, date = '', type = ''}) {
 
             if (docSnap.exists() && docSnap.data().uid === userInfo.userID) {
                 const transactionData = docSnap.data();
-                const transactionDate = transactionData.dateTime.split('T')[0];
-                setTransactionDescription(transactionData.name);
-                setTransactionValue(transactionData.value);
+                const transactionDate = decryptData(transactionData.dateTime).split('T')[0];
+                setTransactionDescription(decryptData(transactionData.name));
+                setTransactionValue(decryptData(transactionData.value));
                 setTransactionType(transactionData.type);
                 setTransactionDate(transactionDate);
             }
@@ -63,7 +63,7 @@ function transactionForm({description = '', value = 0, date = '', type = ''}) {
         try {
             const encryptedTransactionDescription = AES.encrypt(transactionDescription, import.meta.env.VITE_AES_KEY).toString();
             const encryptedTransactionValue = AES.encrypt(transactionValue.toString(), import.meta.env.VITE_AES_KEY).toString();
-            const encryptedDateTime = AES.encrypt(dataCompleta, import.meta.env.VITE_AES_KEY).toString();
+            const encryptedDateTime = AES.encrypt(transactionDate, import.meta.env.VITE_AES_KEY).toString();
 
             const transactionRef = doc(db, 'transactions', id);
             await updateDoc(transactionRef, {
@@ -168,7 +168,7 @@ const handleNewTransaction = async (e) => {
                                 id="description"
                                 className={invalid.includes('description') ? 'invalid' : ''}
                                 placeholder="Descrição da transação"
-                                value={id ? decryptData(transactionDescription) : transactionDescription}
+                                value={transactionDescription}
                                 onChange={(e) => setTransactionDescription(e.target.value)}
                             />
                         </div>
@@ -180,7 +180,7 @@ const handleNewTransaction = async (e) => {
                                 id="value"
                                 className={invalid.includes('value') ? 'invalid' : ''}
                                 placeholder="Valor da transação"
-                                value={id ? decryptData(transactionValue) : transactionValue}
+                                value={transactionValue}
                                 onChange={(e) => setTransactionValue(parseFloat(e.target.value))}
                             />
                         </div>
@@ -191,7 +191,7 @@ const handleNewTransaction = async (e) => {
                                 type="date"
                                 id="date"
                                 className={invalid.includes('date') ? 'invalid inputDate' : 'inputDate'}
-                                value={id ? decryptData(transactionDate) : transactionDate}
+                                value={transactionDate}
                                 onChange={(e) => setTransactionDate(e.target.value)}
                             />
                         </div>
