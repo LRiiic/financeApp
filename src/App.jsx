@@ -18,6 +18,8 @@ function App() {
     return user && user.emailVerified;
   }
 
+  console.log(import.meta.env.VITE_SECRET_KEY);
+
   const router = createBrowserRouter([
     {
       path: "/login",
