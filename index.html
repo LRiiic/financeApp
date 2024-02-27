@@ -46,6 +46,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      onload = () => {
+        if (window.location.hostname.includes('preview')) {
+          console.log('Preview mode');
+          let deployBadge = document.createElement('div')
+          deployBadge.id = 'preview-deploy-badge';
+          document.getElementsByTagName('body')[0].prepend(deployBadge);
+          document.getElementById('preview-deploy-badge').style.visibility = 'visible';
+        }
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
