@@ -249,7 +249,7 @@ i {
 .card-incomes,
 .card-expenses  {
   width: 100%;
-  text-align: center;
+  text-align: left;
   background-color: #FFFFFF;
   border: 1px solid #c7c7c7;
   color: #333;
@@ -269,7 +269,7 @@ i {
 }
 
 .card-incomes {
-  cursor: pointer;
+  /* cursor: pointer; */
   background-color: #9fd1c3;
   border-color: transparent;
 }
@@ -285,7 +285,7 @@ i {
 }
 
 .card-expenses {
-  cursor: pointer;
+  /* cursor: pointer; */
   background-color: #e0b1b1;
   border-color: transparent;
 }

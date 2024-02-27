@@ -295,7 +295,16 @@ function Home() {
       } else if (dateValue === "year") {
         return transactionDate.getFullYear() === selectedDate.getFullYear();
       } else if (dateValue === "week") {
-        return;
+        let currentDate = new Date();
+        let startDate = new Date(currentDate.getFullYear(), 0, 1);
+        let days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+        let currentWeek = Math.ceil(days / 7);
+        
+        let days2 = Math.floor((transactionDate - startDate) / (24 * 60 * 60 * 1000));
+        let transactionWeek = Math.ceil(days2 / 7);
+        if (transactionDate.getUTCDay() === 0) { transactionWeek += 1 };
+
+        return transactionWeek === currentWeek;
       } else if (dateValue === "today" || dateValue === "yesterday") {
         return (
           transactionDate.getDate() === selectedDate.getDate() &&
@@ -398,14 +407,13 @@ function Home() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
+                <div
                   className={
                     buttonIncomes
                       ? "card-info card-incomes filtered"
                       : "card-info card-incomes"
                   }
-                  onClick={(e) => handleFilterByType(e, "income")}
+                  // onClick={(e) => handleFilterByType(e, "income")}
                 >
                   <i ref={iconIncomes}></i>
                   <div className="content">
@@ -420,15 +428,15 @@ function Home() {
                       R$ {parseFloat(totalIncomes).toFixed(2)}
                     </span>
                   </div>
-                </button>
+                </div>
 
-                <button
+                <div
                   className={
                     buttonExpenses
                       ? "card-info card-expenses filtered"
                       : "card-info card-expenses"
                   }
-                  onClick={(e) => handleFilterByType(e, "expense")}
+                  // onClick={(e) => handleFilterByType(e, "expense")}
                 >
                   <i ref={iconExpenses}></i>
                   <div className="content">
@@ -443,7 +451,7 @@ function Home() {
                       R$ {parseFloat(totalExpenses).toFixed(2)}
                     </span>
                   </div>
-                </button>
+                </div>
               </div>
 
               <div>
