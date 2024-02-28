@@ -15,6 +15,7 @@ export default defineConfig({
         description: "Personal finance app",
         background_color: '#ffffff',
         theme_color: '#ffffff',
+        orientation: "portrait-primary",
         icons: [
           {
             src: '/pwa-192x192.png',

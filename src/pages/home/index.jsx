@@ -197,7 +197,7 @@ function Home() {
         collection(db, "transactions"),
         where("uid", "==", userInfo.userID),
         orderBy("dateTime", "desc"),
-        limit(10)
+        limit(5)
       );
       const transactions = await getDocs(q);
       const fetchedData = transactions.docs.map((doc) => ({
@@ -301,7 +301,7 @@ function Home() {
     }
 
     const filteredTransactions = transactions.filter((transaction) => {
-      let transactionDate = new Date(decryptData(transaction.dateTime));
+      let transactionDate = new Date(transaction.dateTime);
       transactionDate = formatDate(transactionDate);
       selectedDate = formatDate(selectedDate);
       transactionDate = new Date(

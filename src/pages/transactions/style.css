@@ -9,6 +9,6 @@
 }
 
 .sticky-shadow {
-  box-shadow: hsla(0 0% 0% / 0.2) 0 0.5rem 1rem;
+  box-shadow: hsla(0 0% 0% / 0.2) 0px 1rem 1rem -10px;
   transition-duration: 400ms;
 }

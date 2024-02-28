@@ -303,7 +303,7 @@ function Transactions() {
     }
 
     const filteredTransactions = transactions.filter((transaction) => {
-      let transactionDate = new Date(decryptData(transaction.dateTime));
+      let transactionDate = new Date(transaction.dateTime);
       transactionDate = formatDate(transactionDate);
       selectedDate = formatDate(selectedDate);
       transactionDate = new Date(

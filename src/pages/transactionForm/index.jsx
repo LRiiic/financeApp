@@ -46,7 +46,7 @@ function transactionForm({description = '', value = 0, date = '', type = ''}) {
 
             if (docSnap.exists() && docSnap.data().uid === userInfo.userID) {
                 const transactionData = docSnap.data();
-                const transactionDate = decryptData(transactionData.dateTime).split('T')[0];
+                const transactionDate = transactionData.dateTime.split('T')[0];
                 setTransactionDescription(decryptData(transactionData.name));
                 setTransactionValue(decryptData(transactionData.value));
                 setTransactionType(transactionData.type);
@@ -63,14 +63,13 @@ function transactionForm({description = '', value = 0, date = '', type = ''}) {
         try {
             const encryptedTransactionDescription = AES.encrypt(transactionDescription, import.meta.env.VITE_AES_KEY).toString();
             const encryptedTransactionValue = AES.encrypt(transactionValue.toString(), import.meta.env.VITE_AES_KEY).toString();
-            const encryptedDateTime = AES.encrypt(transactionDate, import.meta.env.VITE_AES_KEY).toString();
 
             const transactionRef = doc(db, 'transactions', id);
             await updateDoc(transactionRef, {
                 name: encryptedTransactionDescription,
                 value: encryptedTransactionValue,
                 type: transactionType,
-                dateTime: encryptedDateTime,
+                dateTime: transactionDate,
             });
             handleshowPopup('Transação editada com sucesso!', 'success');
         } catch (error) {
@@ -126,13 +125,12 @@ const handleNewTransaction = async (e) => {
 
         const encryptedTransactionDescription = AES.encrypt(transactionDescription, import.meta.env.VITE_AES_KEY).toString();
         const encryptedTransactionValue = AES.encrypt(transactionValue.toString(), import.meta.env.VITE_AES_KEY).toString();
-        const encryptedDateTime = AES.encrypt(dataCompleta, import.meta.env.VITE_AES_KEY).toString();
 
         const docRef = await addDoc(collection(db, "transactions"), {
             name: encryptedTransactionDescription,
             value: encryptedTransactionValue,
             type: transactionType,
-            dateTime: encryptedDateTime,
+            dateTime: dataCompleta,
             uid: userInfo.userID,
         });
         handleshowPopup('Transação registrada com sucesso!', 'success');

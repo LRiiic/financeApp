@@ -47,7 +47,7 @@ function TransactionCard({ item, handleshowPopup }) {
 
   return (
     <>
-    <li className={'transaction-card'} date={decryptData(item.dateTime).substr(0, 10)} onClick={transactionDetails(item.id)}>
+    <li className={'transaction-card'} date={item.dateTime.substr(0, 10)} onClick={transactionDetails(item.id)}>
         <span className='transaction-remove'>
             <div className='edit-icon' onClick={() => navigate('/edit-transaction/' + item.id)}></div>
             <div className='remove-icon' onClick={() => handleshowPopup('Deseja remover esta transação?', 'alert', item.id)}></div>
@@ -57,7 +57,7 @@ function TransactionCard({ item, handleshowPopup }) {
         <p className='transaction-name'>
             {decryptData(item.name)}
             <br/>
-            <small className="transaction-date">{formattedDate(decryptData(item.dateTime))}</small>
+            <small className="transaction-date">{formattedDate(item.dateTime)}</small>
         </p>   
         <p className='transaction-value'>R$ {parseFloat(decryptData(item.value)).toFixed(2)}</p>
     </li>
