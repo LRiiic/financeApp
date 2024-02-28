@@ -21,7 +21,6 @@ import {
   orderBy,
   deleteDoc,
   doc,
-  limit,
 } from "firebase/firestore";
 import { db } from "../../config/firebase-config.js";
 
@@ -31,7 +30,7 @@ import TransactionsList from "../../components/transactionsList/index.jsx";
 import Popup from "../../components/popUp/index.jsx";
 import { decryptData } from "../../functions.jsx";
 
-function Home() {
+function Transactions() {
   const userInfo = JSON.parse(localStorage.getItem("auth"));
 
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -67,12 +66,10 @@ function Home() {
   const [emailVerified, setEmailVerified] = useState(null);
   const [resendedEmail, setResendedEmail] = useState(false);
 
-  const cardService = useRef(null);
-  const cardService2 = useRef(null);
-  const cardService3 = useRef(null);
-
   const iconIncomes = useRef(null);
   const iconExpenses = useRef(null);
+  const stickyRef = useRef(null);
+  const [isSticky, setIsSticky] = useState(false);
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -110,6 +107,22 @@ function Home() {
         iconExpenses.current.offsetWidth + "px";
     }
   }, [iconIncomes]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const element = stickyRef.current;
+      if (element) {
+        const { top } = element.getBoundingClientRect();
+        setIsSticky(top <= 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const handleshowPopup = (message, type, id) => {
     setMessagePopup(message);
@@ -196,8 +209,7 @@ function Home() {
       const q = query(
         collection(db, "transactions"),
         where("uid", "==", userInfo.userID),
-        orderBy("dateTime", "desc"),
-        limit(10)
+        orderBy("dateTime", "desc")
       );
       const transactions = await getDocs(q);
       const fetchedData = transactions.docs.map((doc) => ({
@@ -242,18 +254,8 @@ function Home() {
   }
 
   useEffect(() => {
-    location.pathname === "/" && handleGetTransactions();
+    location.pathname === "/transactions" && handleGetTransactions();
   }, [location]);
-
-  useEffect(() => {
-    if (location.pathname === "/") {
-     if (cardService.current) {
-       cardService.current.style.height = cardService.current.offsetWidth + "px";
-       cardService2.current.style.height = cardService2.current.offsetWidth + "px";
-       cardService3.current.style.height = cardService3.current.offsetWidth + "px";
-     }
-    }
- }, [location, cardService]);
 
   const formatDate = (dateInfo) => {
     var date = new Date(dateInfo);
@@ -314,16 +316,18 @@ function Home() {
       } else if (dateValue === "year") {
         return transactionDate.getFullYear() === selectedDate.getFullYear();
       } else if (dateValue === "week") {
-        let currentDate = new Date();
-        let startDate = new Date(currentDate.getFullYear(), 0, 1);
-        let days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-        let currentWeek = Math.ceil(days / 7);
+        const currentDate = new Date();
+        const currentDay = currentDate.getDay();
         
-        let days2 = Math.floor((transactionDate - startDate) / (24 * 60 * 60 * 1000));
-        let transactionWeek = Math.ceil(days2 / 7);
-        if (transactionDate.getUTCDay() === 0) { transactionWeek += 1 };
-
-        return transactionWeek === currentWeek;
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(currentDate.getDate() - currentDay);
+    
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+    
+        return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
       } else if (dateValue === "today" || dateValue === "yesterday") {
         return (
           transactionDate.getDate() === selectedDate.getDate() &&
@@ -392,7 +396,7 @@ function Home() {
       ) : (
         <>
           {emailVerified !== null && <><NavBar /><ActionBar/></>}
-          {location.pathname === "/" ? (
+          {location.pathname === "/transactions" ? (
             <>
               {showPopup && (
                 <Popup
@@ -404,13 +408,6 @@ function Home() {
                   loading={loading}
                 />
               )}
-              <h3 className="welcome">
-                Olá,{" "}
-                <span className="userName">
-                  {userInfo.displayName ? userInfo.displayName : userInfo.email}
-                </span>
-              </h3>
-
               <div className="cards-informations">
                 <div className="card-info card-balance">
                   <i></i>
@@ -473,49 +470,124 @@ function Home() {
                 </div>
               </div>
 
-              <div className="services">
-                <h3>Serviços</h3>
-                <button ref={cardService} id="new-transaction" className="card-service" onClick={() => navigate("/new-transaction")}>
-                  <i></i>
-                  <span>Nova Transação</span>
-                </button>
-
-                <button ref={cardService2} id="transactions" className="card-service" onClick={() => navigate("/transactions")}>
-                  <i></i>
-                  <span>Transações</span>
-                </button>
-
-                <button ref={cardService3} id="profile" className="card-service" onClick={() => navigate("/profile")}>
-                  <i></i>
-                  <span>Perfil</span>
-                </button>
-              </div>
-
-              <div className="transactions">
-                <h4 style={{ marginBottom: "0px" }}>Ultimas transações:</h4>
-                <small className={fetching ? "loadingElement" : ""}>
-                  {totalResults} transações encontradas
-                </small>
-
-                {fetching ? (
-                  <ul className="transactions-list">
-                    <li className="cardSkeleton"></li>
-                    <li className="cardSkeleton"></li>
-                  </ul>
-                ) : (
-                  <>
-                    <TransactionsList
-                      transactions={transactions}
-                      searchTerm={searchTerm}
-                      searchResults={searchResults}
-                      searchByType={searchByType}
-                      filterDate={filterDate}
-                      handleGetTransactions={handleGetTransactions}
-                      handleshowPopup={handleshowPopup}
+              <div>
+                <div>
+                  <div className={`toolbar sticky ${isSticky ? 'sticky-shadow' : ''}`} ref={stickyRef}>
+                    <h3 className="welcome">
+                      <span className="userName">
+                        Transações
+                      </span>
+                    </h3>
+                    <input
+                      type="text"
+                      name="search"
+                      placeholder="Pesquisar..."
+                      value={searchTerm}
+                      onChange={handleSearch}
                     />
-                    <button className="view-all-transactions btnPrimary" onClick={() => navigate("/transactions")}>Ver todas as transações</button>
-                  </>
-                )}
+                    <div className="filtersDate">
+                      <div className="filtersWrap">
+                        <div className="inputWrap">
+                          <input
+                            type="radio"
+                            id="yesterday"
+                            name="type"
+                            value="yesterday"
+                            checked={filterDate === "yesterday"}
+                            onChange={handleFilterDateChange}
+                            onClick={handleFilterDateChange}
+                          />
+                          <label className="filterDate" htmlFor="yesterday">
+                            Ontem
+                          </label>
+                        </div>
+
+                        <div className="inputWrap">
+                          <input
+                            type="radio"
+                            id="today"
+                            name="type"
+                            value="today"
+                            checked={filterDate === "today"}
+                            onChange={handleFilterDateChange}
+                            onClick={handleFilterDateChange}
+                          />
+                          <label className="filterDate" htmlFor="today">
+                            Hoje
+                          </label>
+                        </div>
+
+                        <div className="inputWrap">
+                          <input
+                            type="radio"
+                            id="week"
+                            name="type"
+                            value="week"
+                            checked={filterDate === "week"}
+                            onChange={handleFilterDateChange}
+                            onClick={handleFilterDateChange}
+                          />
+                          <label className="filterDate" htmlFor="week">
+                            Esta semana
+                          </label>
+                        </div>
+
+                        <div className="inputWrap">
+                          <input
+                            type="radio"
+                            id="month"
+                            name="type"
+                            value="month"
+                            checked={filterDate === "month"}
+                            onChange={handleFilterDateChange}
+                            onClick={handleFilterDateChange}
+                          />
+                          <label className="filterDate" htmlFor="month">
+                            Este mês
+                          </label>
+                        </div>
+
+                        <div className="inputWrap">
+                          <input
+                            type="radio"
+                            id="year"
+                            name="type"
+                            value="year"
+                            checked={filterDate === "year"}
+                            onChange={handleFilterDateChange}
+                            onClick={handleFilterDateChange}
+                          />
+                          <label className="filterDate" htmlFor="year">
+                            Este ano
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="transactions">
+                    <small className={fetching ? "loadingElement" : ""}>
+                      {totalResults} transações encontradas
+                    </small>
+
+                    {fetching ? (
+                      <ul className="transactions-list">
+                        <li className="cardSkeleton"></li>
+                        <li className="cardSkeleton"></li>
+                      </ul>
+                    ) : (
+                      <TransactionsList
+                        transactions={transactions}
+                        searchTerm={searchTerm}
+                        searchResults={searchResults}
+                        searchByType={searchByType}
+                        filterDate={filterDate}
+                        handleGetTransactions={handleGetTransactions}
+                        handleshowPopup={handleshowPopup}
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
             </>
           ) : (
@@ -529,4 +601,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Transactions;

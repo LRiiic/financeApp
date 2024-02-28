@@ -1,0 +1,14 @@
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: -1px;
+}
+
+.toolbar {
+  transition: box-shadow 200ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.sticky-shadow {
+  box-shadow: hsla(0 0% 0% / 0.2) 0 0.5rem 1rem;
+  transition-duration: 400ms;
+}

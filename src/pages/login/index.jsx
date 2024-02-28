@@ -8,6 +8,7 @@ import { auth, provider, db } from '../../config/firebase-config';
 import { signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, sendEmailVerification } from 'firebase/auth';
 import { collection, getDocs, query, where } from "firebase/firestore"; 
 import { useNavigate, Navigate } from 'react-router-dom';
+import Footer from '../../components/footer';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -149,10 +150,7 @@ function Login() {
         <button id="install-button" style={{ display: pwaFullScreen ? 'none' : isIOS ? 'flex' : (deferredPrompt ? 'flex' : 'none') }} onClick={handleInstallClick}>
           <i></i>Adicionar à tela inicial
         </button>
-        <footer>
-          <p>Reporte problemas e bugs no email a seguir: <a href="mailto:financeflexapp@gmail.com">financeflexapp@gmail.com</a></p>
-          <small>Versão: 1.0.0 (beta)</small>
-        </footer>
+        <Footer />
       </div>
     </>
   ) : (

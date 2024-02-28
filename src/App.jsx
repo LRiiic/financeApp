@@ -5,6 +5,7 @@ import { getAuth } from "firebase/auth";
 import LoginForm from './pages/login';
 import Register from './pages/register';
 import ResetPassword from './pages/resetPassword';
+import Transactions from './pages/transactions';
 import Home from './pages/home';
 import TransactionForm from './pages/transactionForm';
 import Profile from './pages/profile';
@@ -30,6 +31,11 @@ function App() {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/transactions",
+      element: <Transactions />,
+      loader: () => getUser(),
     },
     {
       path: "/",

@@ -136,6 +136,10 @@ const handleNewTransaction = async (e) => {
             uid: userInfo.userID,
         });
         handleshowPopup('Transação registrada com sucesso!', 'success');
+        setTransactionDescription('');
+        setTransactionValue('');
+        setTransactionDate('');
+        setTransactionType(null);
     } catch (e) {
         handleshowPopup('Erro ao registrar transação!', 'error');
     }
