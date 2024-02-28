@@ -48,11 +48,16 @@ function Login() {
         id: doc.id,
         ...doc.data()
       }));
+
+      let displayName = user.email;
+      if (fetchedData.length > 0) {
+        displayName = fetchedData[0].displayName;
+      }
       
       const authInfo = {
         userID: user.uid,
         email: user.email,
-        displayName: fetchedData[0].displayName,
+        displayName: displayName,
         isAuth: true,
       };
 

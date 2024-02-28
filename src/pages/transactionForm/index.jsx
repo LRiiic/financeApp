@@ -94,18 +94,22 @@ const handleNewTransaction = async (e) => {
     e.stopPropagation();
 
     setInvalid([]);
-
+    console.log('fi', invalid);
     const isInvalid = (value) => {
+        console.log('entrei:', value)
         if (!value || value === 0 || value === '') {
+            console.log('entrei2:', value, 'entrei22:', invalid)
             setInvalid((invalid) => [...invalid, value]);
             return true;
         }
         return false;
     };
 
-    if (isInvalid(transactionDescription) || isInvalid(transactionValue) || isInvalid(transactionType) || isInvalid(transactionDate)) {
-        return;
-    }
+    if (transactionDescription === '') setInvalid((invalid) => [...invalid, 'description']);
+    if (!transactionValue || transactionValue == 0 || transactionValue === '') setInvalid((invalid) => [...invalid, 'value']);
+    if (transactionType === '') setInvalid((invalid) => [...invalid, 'type']);
+    if (transactionDate === '') setInvalid((invalid) => [...invalid, 'date']);
+    if (transactionDescription === '' || !transactionValue || transactionType === '' || transactionDate === '') return;
 
     try {
         if (location.pathname.includes('edit-transaction')) {

@@ -10,6 +10,7 @@ import {
   Route,
   useNavigate,
   useLocation,
+  Link
 } from "react-router-dom";
 import { getAuth, signOut, sendEmailVerification } from "firebase/auth";
 import {
@@ -30,6 +31,7 @@ import ActionBar from "../../components/actionBar/index.jsx";
 import TransactionsList from "../../components/transactionsList/index.jsx";
 import Popup from "../../components/popUp/index.jsx";
 import { decryptData } from "../../functions.jsx";
+import Loader from "../../components/loader/index.jsx";
 
 function Home() {
   const userInfo = JSON.parse(localStorage.getItem("auth"));
@@ -357,7 +359,7 @@ function Home() {
   return isAuthenticated ? (
     <>
     
-      {emailVerified === null && <div className="loaderContainer"><div className="mainLoader"></div></div>}
+      {emailVerified === null && <Loader/>}
 
       {emailVerified === false ? (
         <div className="unverified">
