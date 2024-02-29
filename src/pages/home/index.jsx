@@ -17,6 +17,7 @@ import {
   collection,
   addDoc,
   getDocs,
+  updateDoc,
   query,
   where,
   orderBy,
@@ -30,8 +31,10 @@ import NavBar from "../../components/navBar/index.jsx";
 import ActionBar from "../../components/actionBar/index.jsx";
 import TransactionsList from "../../components/transactionsList/index.jsx";
 import Popup from "../../components/popUp/index.jsx";
+import Carousel from "../../components/carousel/index.jsx";
 import { decryptData } from "../../functions.jsx";
 import Loader from "../../components/loader/index.jsx";
+import Tutorial from "../../components/tutorial/index.jsx";
 
 function Home() {
   const userInfo = JSON.parse(localStorage.getItem("auth"));
@@ -68,6 +71,7 @@ function Home() {
   const [fetching, setFetching] = useState(false);
   const [emailVerified, setEmailVerified] = useState(null);
   const [resendedEmail, setResendedEmail] = useState(false);
+  const [tutorial, setTutorial] = useState(false);
 
   const cardService = useRef(null);
   const cardService2 = useRef(null);
@@ -102,6 +106,11 @@ function Home() {
       setEmailVerified(false);
     } else if (user && user.emailVerified) {
       setEmailVerified(true);
+      if (userInfo.tutorial) {
+        setTutorial(true);
+      } else {
+        setTutorial(false);
+      }
     }
   }, [user]);
 
@@ -112,6 +121,20 @@ function Home() {
         iconExpenses.current.offsetWidth + "px";
     }
   }, [iconIncomes]);
+
+  async function handleCloseTutorial(){
+    try {
+      const userRef = doc(db, 'users', userInfo.userID);
+      await updateDoc(userRef, {
+        tutorial: false,
+      });
+
+      localStorage.setItem("auth", JSON.stringify({ ...userInfo, tutorial: false }));
+      setTutorial(false);
+    } catch (error) {
+      console.error("Erro ao buscar dados do Firestore:", error);
+    }
+  }
 
   const handleshowPopup = (message, type, id) => {
     setMessagePopup(message);
@@ -406,6 +429,9 @@ function Home() {
                   loading={loading}
                 />
               )}
+
+              {tutorial && (<Tutorial handleCloseTutorial={handleCloseTutorial}/>)}
+
               <h3 className="welcome">
                 Olá,{" "}
                 <span className="userName">

@@ -69,6 +69,7 @@ function Register({displayName = '', email = '', cellphone = '', password = ''})
         email: user.email,
         displayName: userDisplayName,
         cellphone: cleanedCellphone,
+        tutorial: true,
       });
 
       const authInfo = {
@@ -76,6 +77,7 @@ function Register({displayName = '', email = '', cellphone = '', password = ''})
         email: user.email,
         displayName: userDisplayName,
         isAuth: true,
+        tutorial: true,
       };
 
       localStorage.setItem('auth', JSON.stringify(authInfo));
