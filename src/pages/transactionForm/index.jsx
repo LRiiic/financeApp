@@ -94,11 +94,8 @@ const handleNewTransaction = async (e) => {
     e.stopPropagation();
 
     setInvalid([]);
-    console.log('fi', invalid);
     const isInvalid = (value) => {
-        console.log('entrei:', value)
         if (!value || value === 0 || value === '') {
-            console.log('entrei2:', value, 'entrei22:', invalid)
             setInvalid((invalid) => [...invalid, value]);
             return true;
         }

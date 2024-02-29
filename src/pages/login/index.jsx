@@ -52,7 +52,6 @@ function Login() {
       let displayName = user.email;
       let tutorial = false;
       if (fetchedData.length > 0) {
-        console.log('fetchedData', fetchedData)
         displayName = fetchedData[0].displayName;
         tutorial = fetchedData[0].tutorial;
       }
